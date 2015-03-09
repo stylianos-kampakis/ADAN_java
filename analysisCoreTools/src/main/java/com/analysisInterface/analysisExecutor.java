@@ -1,6 +1,5 @@
 package com.analysisInterface;
 
-
 /**AnalysisExecutor
  * 
  * This class is the central commander for any kind of analysis. 
