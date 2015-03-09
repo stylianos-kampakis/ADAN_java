@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 /**DataFrame
 *DataFrame is a class inspired by the DataFrame in R.
@@ -36,6 +37,8 @@ public class DataFrame {
 	*/
 	public enum DataPointType{INTEGER, DOUBLE, STRING, NA}
 	public enum DataPointSubType{POSITIVE_INTEGER, POSITIVE_REAL, FACTOR, ORDINAL_FACTOR, FREE_TEXT,NONE}
+	
+	public enum DatasetDescriptionTags{SCALED, NUMERIC_ONLY, NO_MISSING_VALUES};
 	
 	/*A dataframe is a hashmap that contains keys and datapoints. A key is of the form (row,column).
 	 * This form is implemented because it can be faster for implementing various functions. When
@@ -66,7 +69,6 @@ public class DataFrame {
 	 * The function always assume that the column names are in the first line.
 	 * 
 	 * @param path		The path of the .csv file
-	 * @return			Descriptio
 	 */
 	public void readCSV(String path) throws IOException{
 		//initialize the
@@ -161,7 +163,7 @@ public class DataFrame {
 		
 	/**public int getRowsNumber()
 	 * 
-	 *Returns the row number.
+	 *Returns the total number of rows.
 	 */
 	public int getRowsNumber(){
 		
@@ -170,7 +172,7 @@ public class DataFrame {
 		
 	/**public int getColumnsNumber()
 	 * 
-	 *Returns the column number.
+	 *Returns the total number of columns.
 	 */
 	public int getColumnsNumber(){
 		
@@ -197,6 +199,37 @@ public class DataFrame {
 		}
 		
 		return result;
+	}
+	
+	/**public ArrayList<DataPoint> getColumn(string columnName)
+	 * 
+	 *Finds a column with the corresponding name and returns it. Note, that
+	 *if two columns share the same name, then it will return a column randomly, among
+	 *all the columns that share the same name.
+	 *
+	 *@param columnName		the name of the column
+	 * @throws DataFrameIndexException 
+	 */
+	public ArrayList<DataPoint> getColumn(String columnName) throws DataFrameIndexException{
+		ArrayList<DataPoint> result=new ArrayList<DataPoint>();
+		int columnKey = -1;
+		
+		for(Entry<Integer, Column> entry: Columns.entrySet()){
+			if (entry.getValue().equals(columnName)){
+				columnKey=entry.getKey();
+				break;
+			}
+			
+		}
+		// if the key was not found throw exception otherwise proceed normally
+		if (columnKey>-1){
+			return getColumn(columnKey);
+		}
+		else
+		{
+			throw new DataFrameIndexException("Column not found.");
+		}
+	
 	}
 	
 	/**public ArrayList<DataPoint> getRow(int row)
