@@ -1,19 +1,8 @@
 package com.analysisInterface;
 
-import java.util.ArrayList;
-
 import com.dataframe.DataFrame;
 
 public interface IModel {	
-
-	
-	//The name of the response must either be provided or must be
-	//set when executing the fit functions. The predict function does not change
-	//the name of the response, since a new dataset might not follow the original convention.
-	String response=null;
-	
-	//Like with the response, the covariates' names get saved when executing 'fit'
-	String[] covariates=null;
 	
 	//assumes that all the covariates will be used
 	//If the interface is R then we can define interactions, such as covariates={"variable1*variable2"}
@@ -27,8 +16,7 @@ public interface IModel {
 //the names of the variables.
 	public double[] predict(DataFrame df);
 	
-	//getters for the fittedValues and the predictedValues
-	public double[] returnPrediction();
-	public double[] returnFitted();
+	//gets the fittedValues
+	public double[] getFitted();
 
 }

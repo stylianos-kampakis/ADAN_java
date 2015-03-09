@@ -1,6 +1,7 @@
 package com.rinterface;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import com.dataframe.DataFrame;
 
@@ -21,8 +22,8 @@ RLinearRegressionProvider rinter=new RLinearRegressionProvider("C:/Program Files
     	    	try {
     				df.readCSV(path);
     				String result =rinter.fit("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
-    				double[] res=rinter.predict(df);
-    				//System.out.println(res.toString());
+    				double res=rinter.getLogLikelihood();
+    		
     			} catch (IOException e) {
     				// TODO Auto-generated catch block
     				e.printStackTrace();

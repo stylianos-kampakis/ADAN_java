@@ -4,12 +4,12 @@ import java.util.HashMap;
 
 public interface IStatisticalMethod {
 	
-	public double AIC();
+	public double getAIC();
 	
-	public double BIC();
+	public double getBIC();
 	
-	public double likelihood();
+	public double getLogLikelihood();
 	
-	public HashMap<String,Double> returnCoefficients();
+	public HashMap<String,Double> getCoefficients();
 
 }

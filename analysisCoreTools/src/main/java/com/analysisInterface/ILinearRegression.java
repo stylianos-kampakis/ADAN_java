@@ -6,6 +6,8 @@ import com.dataframe.DataFrame;
 
 public interface ILinearRegression extends IRegression, IStatisticalMethod{
 		
-	public Double Rsquare();	
+	public double rSquared();	
+	
+	public double adjustedRSquared();
 	
 }

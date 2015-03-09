@@ -13,7 +13,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	
 		
 	private boolean modelExists=false;
-	private String response;
+	
 	
 	public RLinearRegressionProvider(){
 		super();
@@ -40,7 +40,6 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		try {
 			String result = caller.getParser().getXMLFileAsString();	
 			modelExists=true;
-			this.response=response;
 			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -77,7 +76,6 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		try {
 			String result = caller.getParser().getXMLFileAsString();
 			modelExists=true;
-			this.response=response;
 			return result;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -104,9 +102,11 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		}
 	}
 
-	public double[] returnPrediction() throws IllegalStateException {
+
+
+	public double[] getFitted() {
 		if(modelExists=true){
-			String template="results=predict(lm1)";
+			String template="results=fitted(lm1)";
 			code.clear();
 			code.addRCode(template);
 			caller.setRCode(code);
@@ -120,34 +120,112 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 
-	public double[] returnFitted() {
-		// TODO Auto-generated method stub
-		return null;
+	public double getAIC() {
+		if(modelExists=true){
+			String template="results=AIC(lm1)";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			double[] results=caller.getParser().getAsDoubleArray("results");
+			
+			return results[0];
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
 	}
 
-	public double AIC() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getBIC() {
+		if(modelExists=true){
+			String template="results=BIC(lm1)";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			double[] results=caller.getParser().getAsDoubleArray("results");
+			
+			return results[0];
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
 	}
 
-	public double BIC() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getLogLikelihood() {
+		if(modelExists=true){
+			String template="results=summary(logLik(lm1))[[1]]";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			double[] results=caller.getParser().getAsDoubleArray("results");
+			
+			return results[0];
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
 	}
 
-	public double likelihood() {
-		// TODO Auto-generated method stub
-		return 0;
+	public HashMap<String,Double> getCoefficients() {
+		if(modelExists=true){
+			
+			HashMap<String,Double> results=new HashMap<String,Double>();
+			
+			String template="results=coef(lm1)";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("names(results)");
+			String[] names=caller.getParser().getAsStringArray("names(results)");
+			caller.runAndReturnResultOnline("results");
+			double[] coefs=caller.getParser().getAsDoubleArray("results");
+			
+			
+			for(int i=0;i<names.length;i++){
+				results.put(names[i], coefs[i]);
+			}
+			
+			return results;
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
 	}
 
-	public HashMap<String, Double> returnCoefficients() {
-		// TODO Auto-generated method stub
-		return null;
+	public double rSquared() {
+		if(modelExists=true){
+			String template="results=summary(lm1)$r.squared";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			double[] results=caller.getParser().getAsDoubleArray("results");
+			
+			return results[0];
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
+	}
+	
+	public double adjustedRSquared() {
+		if(modelExists=true){
+			String template="results=summary(lm1)$adj.r.squared";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			double[] results=caller.getParser().getAsDoubleArray("results");
+			
+			return results[0];
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
 	}
 
-	public Double Rsquare() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }
