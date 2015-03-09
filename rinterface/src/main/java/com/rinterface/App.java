@@ -16,12 +16,13 @@ public class App
     {
     	String path="C:\\iris_numeric.csv";
     		DataFrame df=new DataFrame();
-RInterface rinter=new RInterface("C:/Program Files/R/R-3.1.2/bin/x64/RScript.exe");
+RLinearRegressionProvider rinter=new RLinearRegressionProvider("C:/Program Files/R/R-3.1.2/bin/x64/R.exe");
 
     	    	try {
     				df.readCSV(path);
-    				String result =rinter.runLinearRegression("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
-    				//System.out.println(df.getRDataFrame());
+    				String result =rinter.fit("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
+    				double[] res=rinter.predict(df);
+    				//System.out.println(res.toString());
     			} catch (IOException e) {
     				// TODO Auto-generated catch block
     				e.printStackTrace();
