@@ -65,6 +65,9 @@ public class IndexKey implements Serializable{
 		public void setColumn(int column){
 			this.column=column;
 		}
+		
+		
+	
 	}
 
 

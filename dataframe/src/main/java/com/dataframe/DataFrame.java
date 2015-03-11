@@ -5,6 +5,8 @@ import com.dataframe.IndexKey;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -208,14 +210,13 @@ public class DataFrame {
 	 *all the columns that share the same name.
 	 *
 	 *@param columnName		the name of the column
-	 * @throws DataFrameIndexException 
+	 *@throws DataFrameIndexException 
 	 */
 	public ArrayList<DataPoint> getColumn(String columnName) throws DataFrameIndexException{
-		ArrayList<DataPoint> result=new ArrayList<DataPoint>();
 		int columnKey = -1;
 		
-		for(Entry<Integer, Column> entry: Columns.entrySet()){
-			if (entry.getValue().equals(columnName)){
+		for(Entry<Integer, Column> entry: this.Columns.entrySet()){
+			if (entry.getValue().toString().equals(columnName)){
 				columnKey=entry.getKey();
 				break;
 			}
@@ -229,7 +230,6 @@ public class DataFrame {
 		{
 			throw new DataFrameIndexException("Column not found.");
 		}
-	
 	}
 	
 	/**public ArrayList<DataPoint> getRow(int row)
@@ -249,6 +249,8 @@ public class DataFrame {
 		
 		return result;
 	}
+	
+	
 	
 	/**public void guessType()
 	 * 
@@ -361,16 +363,182 @@ public class DataFrame {
 	return true;
 	}
 	
+	
 	public void dropColumn(int column){
+		IndexKey key=new IndexKey(1,column);
+		int rowsNumber=this.getRowsNumber();
 		
+		for (int i=2;i<=rowsNumber+1;i++){
+			this.df.remove(key);
+			key.setRow(i);
+		}
+		
+		this.Columns.remove(column);
 		
 	}
 	
+	public void dropColumns(int[] columns){
+		
+		for(int col : columns){
+			this.dropColumn(col);
+		}
+		this.rebuildIndexColumn();
+	}
 	
 	public void dropRow(int row){
 		
+		IndexKey key=new IndexKey(row,1);
+		int columnsNumber=getColumnsNumber();
+		
+		for (int i=2;i<=columnsNumber+1;i++){
+			this.df.remove(key);
+			key.setColumn(i);
+		}		
 	}
 	
+	
+	public void dropRows(int[] rows){
+		
+		for(int row : rows){
+			this.dropRow(row);
+		}
+		this.rebuildIndexRow();
+	}
+	
+	public void rebuildIndex(){
+		
+		int columnsNumber=getColumnsNumber();
+
+		
+		Set<IndexKey> keys=df.keySet();	
+		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
+		
+		for(int column=1;column<=columnsNumber;column++){
+			list.add(new IndexKey(0,column));
+		}
+		Collections.sort(list,new compareIndexKey());
+		
+		IndexKey dummy1;
+		IndexKey dummy2;
+		IndexKey newIndex;
+		int difference_col;
+		int difference_row;
+		
+		
+
+		for(int i1=0;i1<list.size()-columnsNumber;i1=i1+columnsNumber){
+			
+			dummy1=list.get(i1);		
+			dummy2=list.get(i1+columnsNumber+1);
+			difference_row=dummy2.getRow()-dummy1.getRow();
+			
+			if(difference_row>1){
+			
+				for(int j=0;j<columnsNumber;j++){
+					
+					dummy2=list.get(i1+j+columnsNumber+1);
+					newIndex=new IndexKey(dummy1.getRow()+1,dummy2.getColumn());
+					
+					DataPoint point=df.get(dummy2);
+					df.remove(dummy2);
+					df.put(newIndex, point);
+					list.set(i1+j+columnsNumber+1, newIndex);				
+					System.out.println(newIndex.toString());
+				}			
+			}
+		}
+		
+		int i=0;
+		while(i<list.size()-1)
+		{
+			dummy1=list.get(i);
+			dummy2=list.get(i+1);
+			difference_col=dummy2.getColumn()-dummy1.getColumn();
+			
+			if(difference_col>1 && dummy1.getRow()==dummy2.getRow()){
+				newIndex=new IndexKey(dummy2.getRow(),dummy1.getColumn()+1);
+				DataPoint point=df.get(dummy2);
+				df.remove(dummy2);
+				df.put(newIndex, point);
+				list.set(i+1, newIndex);	
+				i--;
+			}
+			
+			i++;
+		}
+		
+		
+			
+
+	}
+	
+	private void rebuildIndexColumn(){
+		
+		Set<IndexKey> keys=df.keySet();	
+		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
+		Collections.sort(list,new compareIndexKey());
+		
+		IndexKey dummy1;
+		IndexKey dummy2;
+		IndexKey newIndex;
+		int difference_col;
+		int difference_row;
+int columnsNumber=getColumnsNumber();
+		
+		int i=0;
+		while(i<list.size()-1)
+		{
+			dummy1=list.get(i);
+			dummy2=list.get(i+1);
+			difference_col=dummy2.getColumn()-dummy1.getColumn();
+			
+			if(difference_col>1 && dummy1.getRow()==dummy2.getRow()){
+				newIndex=new IndexKey(dummy2.getRow(),dummy1.getColumn()+1);
+				DataPoint point=df.get(dummy2);
+				df.remove(dummy2);
+				df.put(newIndex, point);
+				list.set(i+1, newIndex);	
+				i--;
+			}
+			
+			i++;
+		}
+		
+	}
+	
+	private void rebuildIndexRow(){
+		Set<IndexKey> keys=df.keySet();	
+		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
+		Collections.sort(list,new compareIndexKey());
+		
+		IndexKey dummy1;
+		IndexKey dummy2;
+		IndexKey newIndex;
+		int difference_col;
+		int difference_row;
+int columnsNumber=getColumnsNumber();
+		
+		for(int i1=0;i1<list.size()-columnsNumber;i1=i1+columnsNumber){
+			dummy1=list.get(i1);
+			dummy2=list.get(i1+columnsNumber);
+			difference_row=dummy2.getRow()-dummy1.getRow();
+			
+			if(difference_row>1){
+			
+				for(int j=0;j<columnsNumber;j++){
+					
+					dummy2=list.get(i1+j+columnsNumber);
+					newIndex=new IndexKey(dummy1.getRow()+1,dummy2.getColumn());
+					
+					DataPoint point=df.get(dummy2);
+					df.remove(dummy2);
+					df.put(newIndex, point);
+					list.set(i1+j+columnsNumber, newIndex);				
+					System.out.println(newIndex.toString());
+				}			
+			}
+		}
+	}
 	
 	/**public HashSet<String> getFactors(ArrayList<DataPoint> column)
 	 * 
@@ -394,7 +562,7 @@ public class DataFrame {
 		
 	}
 	
-	/**public String convertToR()
+	/**public String getRDataFrame()
 	 * 
 	 * Returns R code that builds a data.frame equivalent to this DataFrame.
 	 * 
@@ -416,9 +584,7 @@ public class DataFrame {
 				template=template+point.toString()+",";
 				
 			}
-			template=template+"),";
-			
-			
+			template=template+"),";			
 		}
 		
 		template=template+")";
@@ -428,6 +594,43 @@ public class DataFrame {
 		template=template.replace("?", "NA");
 
 		return template;
+	}
+	
+	public String toString(){
+		
+		String dummy="";
+		for(int i=1;i<=this.getRowsNumber();i++){
+			dummy=dummy+"\n "+i+": "+this.getRow(i);
+		}
+			
+		return dummy;
+		
+	}
+	
+	//Helper class, used to compare IndexKeys by row. It is used when rebuilding the index.
+	private class compareIndexKey implements Comparator<IndexKey>{
+
+		public int compare(IndexKey first, IndexKey second) {
+			
+				if(first.getRow()>second.getRow()){
+					return 1;
+				}
+				if(second.getRow()>first.getRow()){
+					return -1;
+				}
+				
+				if(first.getColumn()>second.getColumn()){
+					return 1;
+				}
+				
+				if(first.getColumn()<second.getColumn()){
+					return -1;
+				}
+				
+				return 0;
+		}
+		
+
 	}
 	
 }

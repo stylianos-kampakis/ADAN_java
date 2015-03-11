@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 
 
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,7 +105,17 @@ public class AppTest
     }
 
     
-    
+    @Test
+    public void testGetColumnByName(){
+    	try {
+			ArrayList<DataPoint> paok=df_missing.getColumn("Sepal.Length");
+			Assert.assertTrue(paok.get(0).toString().equals("?"));
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
     
    //test that the attributes have the correct type
     
