@@ -405,23 +405,73 @@ public class DataFrame {
 		this.rebuildIndexRow();
 	}
 	
-	public void rebuildIndex(){
-		
-		int columnsNumber=getColumnsNumber();
-
+	
+	private void rebuildIndexColumn(){
 		
 		Set<IndexKey> keys=df.keySet();	
 		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
 		
-		for(int column=1;column<=columnsNumber;column++){
-			list.add(new IndexKey(0,column));
+		int rowsNumber=this.getRowsNumber();
+		
+		for(int row=1;row<=rowsNumber;row++){
+			list.add(new IndexKey(row,0));
 		}
+		
 		Collections.sort(list,new compareIndexKey());
 		
 		IndexKey dummy1;
 		IndexKey dummy2;
 		IndexKey newIndex;
 		int difference_col;
+	
+		int i=0;
+		while(i<list.size()-1)
+		{
+			dummy1=list.get(i);
+			dummy2=list.get(i+1);
+			difference_col=dummy2.getColumn()-dummy1.getColumn();
+			
+			if(difference_col>1 && dummy1.getRow()==dummy2.getRow()){
+				newIndex=new IndexKey(dummy2.getRow(),dummy1.getColumn()+1);
+				DataPoint point=df.get(dummy2);
+				df.remove(dummy2);
+				df.put(newIndex, point);
+				list.set(i+1, newIndex);	
+				i--;
+			}
+			
+			i++;
+		}
+		
+	}
+	
+	
+	/**private void rebuildIndexRow()
+	 * 
+	 * This function is used in order to rebuild the index after one or more rows
+	 * have been removed.
+	 * 
+	 * Once a row is removed, the whole index needs to be rebuilt. The reason is that 
+	 * 
+	 */
+	private void rebuildIndexRow(){
+		int columnsNumber=getColumnsNumber();
+
+		Set<IndexKey> keys=df.keySet();	
+		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
+		
+		
+		for(int column=1;column<=columnsNumber;column++){
+			list.add(new IndexKey(0,column));
+		}
+		
+		
+		Collections.sort(list,new compareIndexKey());
+		
+		IndexKey dummy1;
+		IndexKey dummy2;
+		IndexKey newIndex;
+	
 		int difference_row;
 		
 		
@@ -429,97 +479,6 @@ public class DataFrame {
 		for(int i1=0;i1<list.size()-columnsNumber;i1=i1+columnsNumber){
 			
 			dummy1=list.get(i1);		
-			dummy2=list.get(i1+columnsNumber+1);
-			difference_row=dummy2.getRow()-dummy1.getRow();
-			
-			if(difference_row>1){
-			
-				for(int j=0;j<columnsNumber;j++){
-					
-					dummy2=list.get(i1+j+columnsNumber+1);
-					newIndex=new IndexKey(dummy1.getRow()+1,dummy2.getColumn());
-					
-					DataPoint point=df.get(dummy2);
-					df.remove(dummy2);
-					df.put(newIndex, point);
-					list.set(i1+j+columnsNumber+1, newIndex);				
-					System.out.println(newIndex.toString());
-				}			
-			}
-		}
-		
-		int i=0;
-		while(i<list.size()-1)
-		{
-			dummy1=list.get(i);
-			dummy2=list.get(i+1);
-			difference_col=dummy2.getColumn()-dummy1.getColumn();
-			
-			if(difference_col>1 && dummy1.getRow()==dummy2.getRow()){
-				newIndex=new IndexKey(dummy2.getRow(),dummy1.getColumn()+1);
-				DataPoint point=df.get(dummy2);
-				df.remove(dummy2);
-				df.put(newIndex, point);
-				list.set(i+1, newIndex);	
-				i--;
-			}
-			
-			i++;
-		}
-		
-		
-			
-
-	}
-	
-	private void rebuildIndexColumn(){
-		
-		Set<IndexKey> keys=df.keySet();	
-		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
-		Collections.sort(list,new compareIndexKey());
-		
-		IndexKey dummy1;
-		IndexKey dummy2;
-		IndexKey newIndex;
-		int difference_col;
-		int difference_row;
-int columnsNumber=getColumnsNumber();
-		
-		int i=0;
-		while(i<list.size()-1)
-		{
-			dummy1=list.get(i);
-			dummy2=list.get(i+1);
-			difference_col=dummy2.getColumn()-dummy1.getColumn();
-			
-			if(difference_col>1 && dummy1.getRow()==dummy2.getRow()){
-				newIndex=new IndexKey(dummy2.getRow(),dummy1.getColumn()+1);
-				DataPoint point=df.get(dummy2);
-				df.remove(dummy2);
-				df.put(newIndex, point);
-				list.set(i+1, newIndex);	
-				i--;
-			}
-			
-			i++;
-		}
-		
-	}
-	
-	private void rebuildIndexRow(){
-		Set<IndexKey> keys=df.keySet();	
-		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
-		Collections.sort(list,new compareIndexKey());
-		
-		IndexKey dummy1;
-		IndexKey dummy2;
-		IndexKey newIndex;
-		int difference_col;
-		int difference_row;
-int columnsNumber=getColumnsNumber();
-		
-		for(int i1=0;i1<list.size()-columnsNumber;i1=i1+columnsNumber){
-			dummy1=list.get(i1);
 			dummy2=list.get(i1+columnsNumber);
 			difference_row=dummy2.getRow()-dummy1.getRow();
 			

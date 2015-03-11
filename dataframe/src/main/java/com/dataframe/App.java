@@ -53,9 +53,12 @@ public class App
 //    	
 //    	System.out.println(df.getRow(2));
 //    	df.rebuildIndex();
-    	int[] rows={1,2,3};
+    	int[] rows={1,2,3,150};
      	df.dropRows(rows);
-     	df.rebuildIndex();
+     	
+    	int[] columns={3,4};
+    	df.dropColumns(columns);
+     	
     	System.out.println(df.toString());
     	
     	ArrayList<IndexKey> list=new ArrayList<IndexKey>(df.getDf().keySet());
