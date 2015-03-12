@@ -47,7 +47,7 @@ public class IndexKey implements Serializable{
 	    
 	    @Override
 	    public String toString(){
-	    	return String.valueOf(row)+", "+String.valueOf(column);
+	    	return String.valueOf(row)+","+String.valueOf(column);
 	    }
 	    
 	    public int getRow(){

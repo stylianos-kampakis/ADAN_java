@@ -71,6 +71,7 @@ public class DataFrame {
 	 * The function always assume that the column names are in the first line.
 	 * 
 	 * @param path		The path of the .csv file
+	 * @throws DataFrameIndexException 
 	 */
 	public void readCSV(String path) throws IOException{
 		//initialize the
@@ -187,8 +188,14 @@ public class DataFrame {
 	 *Returns an arraylist containing all the rows for a particular column.
 	 *
 	 *@param column		the key (index) of the column
+	 * @throws DataFrameIndexException 
 	 */
-	public ArrayList<DataPoint> getColumn(int column){
+	public ArrayList<DataPoint> getColumn(int column) throws DataFrameIndexException{
+		
+		if(column>this.getColumnsNumber() || column<1){
+			throw new DataFrameIndexException("Column index does not exist.");
+		}
+		
 		ArrayList<DataPoint> result=new ArrayList<DataPoint>();
 		IndexKey key=new IndexKey(1,column);
 		
@@ -237,8 +244,14 @@ public class DataFrame {
 	 *Returns an arraylist containing all the elements of a row
 	 *
 	 *@param column		the key (index) of the row.
+	 * @throws DataFrameIndexException 
 	 */
-	public ArrayList<DataPoint> getRow(int row){
+	public ArrayList<DataPoint> getRow(int row) throws DataFrameIndexException{
+		
+		if(row>this.getRowsNumber() || row<1){
+			throw new DataFrameIndexException("Invalid row index.");
+		}
+		
 		ArrayList<DataPoint> result=new ArrayList<DataPoint>();
 		IndexKey key=new IndexKey(row,1);
 		
@@ -256,45 +269,53 @@ public class DataFrame {
 	 * 
 	 *Guesses the type and subtype of each column.
 	 *The results then update the Columns variable.
+	 * @throws DataFrameIndexException 
 	 */
 	protected void guessType(){
 
 		for(Integer i : Columns.keySet()){
-		ArrayList<DataPoint> column=this.getColumn(i);
-		
-		if(assertType(column,DataPointType.INTEGER)){
-			Columns.get(i).setType(DataPointType.INTEGER);
-			if(AssertSubType(column,DataPointSubType.POSITIVE_INTEGER)){
-				Columns.get(i).setSubType(DataPointSubType.POSITIVE_INTEGER);
+		ArrayList<DataPoint> column;
+		try {
+			column = this.getColumn(i);
+			if(assertType(column,DataPointType.INTEGER)){
+				Columns.get(i).setType(DataPointType.INTEGER);
+				if(AssertSubType(column,DataPointSubType.POSITIVE_INTEGER)){
+					Columns.get(i).setSubType(DataPointSubType.POSITIVE_INTEGER);
+				}
 			}
-		}
-		else if(assertType(column,DataPointType.DOUBLE)){
-			Columns.get(i).setType(DataPointType.DOUBLE);
-			if(AssertSubType(column,DataPointSubType.POSITIVE_REAL)){
-				Columns.get(i).setSubType(DataPointSubType.POSITIVE_REAL);
-			}
-		}
-		else{
-			Columns.get(i).setType(DataPointType.STRING);
-			HashSet<String> factors=getFactors(column);
-			
-			/*The code implements the following trick to check if a column is a factor
-			*If the number of factors returned from the getFactors function are not less
-			*than the total number of elements in the column, then that column cannot be considered
-			*a factor.
-			*
-			*Obviously, different algorithms can actually treat this as a factor, but it is most likely
-			*that a field where every value is unique comes from a dataset where that field is used
-			*to denote free text.
-			*/
-			if(factors.size()<column.size()){
-				Columns.get(i).setSubType(DataPointSubType.FACTOR);
+			else if(assertType(column,DataPointType.DOUBLE)){
+				Columns.get(i).setType(DataPointType.DOUBLE);
+				if(AssertSubType(column,DataPointSubType.POSITIVE_REAL)){
+					Columns.get(i).setSubType(DataPointSubType.POSITIVE_REAL);
+				}
 			}
 			else{
-				Columns.get(i).setSubType(DataPointSubType.FREE_TEXT);
-			}
+				Columns.get(i).setType(DataPointType.STRING);
+				HashSet<String> factors=getFactors(column);
+				
+				/*The code implements the following trick to check if a column is a factor
+				*If the number of factors returned from the getFactors function are not less
+				*than the total number of elements in the column, then that column cannot be considered
+				*a factor.
+				*
+				*Obviously, different algorithms can actually treat this as a factor, but it is most likely
+				*that a field where every value is unique comes from a dataset where that field is used
+				*to denote free text.
+				*/
+				if(factors.size()<column.size()){
+					Columns.get(i).setSubType(DataPointSubType.FACTOR);
+				}
+				else{
+					Columns.get(i).setSubType(DataPointSubType.FREE_TEXT);
+				}
 
+			}
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		
 		
 		}	
 	}
@@ -363,8 +384,12 @@ public class DataFrame {
 	return true;
 	}
 	
-	
-	public void dropColumn(int column){
+	/**public void dropColumnHelper(int column)
+	 * 
+	 * Helper function used to remove a single column.
+	 * 
+	 */
+	protected void dropColumnHelper(int column){
 		IndexKey key=new IndexKey(1,column);
 		int rowsNumber=this.getRowsNumber();
 		
@@ -377,42 +402,114 @@ public class DataFrame {
 		
 	}
 	
+	/**protected void dropColumns(int[] columns)
+	 * 
+	 * Removes many columns at once.
+	 * 
+	 * @param columns an int[] array of columns to be removed.
+	 * 
+	 */
 	public void dropColumns(int[] columns){
-		
 		for(int col : columns){
-			this.dropColumn(col);
+			dropColumnHelper(col);
+			
 		}
-		this.rebuildIndexColumn();
+		rebuildIndexColumn();
+		rebuildColumnsMap(columns);
 	}
 	
-	public void dropRow(int row){
+
+	/**private void rebuildColumnsMap(int[] columns)
+	 * 
+	 *This is used to rebuild the HashMap that contains the column id-name mappings.
+	 * 
+	 * @param columns an int[] array of columns that were removed.
+	 * 
+	 */
+	private void rebuildColumnsMap(int[] columns) {
+		HashMap<Integer,Column> dummyColumns=new HashMap<Integer,Column>();
 		
+		for(int column:columns){
+		for(Entry<Integer, Column> entry : this.Columns.entrySet()){
+			if(entry.getKey()>column){			
+				dummyColumns.put(entry.getKey()-1, entry.getValue());
+			}
+			else{
+				dummyColumns.put(entry.getKey(), entry.getValue());
+
+			}
+			
+		}
+		}
+		
+		Columns=dummyColumns;		
+	}
+
+	/**protected void dropRowHelper(int row)
+	 * 
+	 * Helper function used to remove a single row.
+	 * 
+	 */
+	protected void dropRowHelper(int row){
 		IndexKey key=new IndexKey(row,1);
 		int columnsNumber=getColumnsNumber();
 		
 		for (int i=2;i<=columnsNumber+1;i++){
-			this.df.remove(key);
+			df.remove(key);
 			key.setColumn(i);
 		}		
 	}
 	
-	
+	/**public void dropRows(int[] rows)
+	 * 
+	 * Function used in order to remove many rows at once. Rebuilds the index after
+	 * the rows are removed.
+	 * 
+	 * @param rows	an int[] array with the indices of the rows.
+	 * 
+	 */
 	public void dropRows(int[] rows){
 		
 		for(int row : rows){
-			this.dropRow(row);
+			dropRowHelper(row);
 		}
-		this.rebuildIndexRow();
+		rebuildIndexRow();
 	}
 	
 	
-	private void rebuildIndexColumn(){
+	/**public void dropRow(int row)
+	 * 
+	 * Function used in order to remove a single row.
+	 *
+	 * 
+	 */
+	public void dropRows(int row){
 		
+		dropRows(new int[]{row});
+
+	}
+	
+	
+	/**private void rebuildIndexColumn()
+	 * 
+	 * This function is used in order to rebuild the index after one or more columns
+	 * have been removed.
+	 * 
+	 * Once a row is removed, the whole index needs to be rebuilt. The reason is that 
+	 * when retrieving rows or columns, the IndexKeys are supposed to be in order. The reason
+	 * is that the getRow and getColumn functions work by updating sequentially the IndexKey.
+	 * 
+	 */
+	private void rebuildIndexColumn(){
+		//first we create a list with all the index keys
 		Set<IndexKey> keys=df.keySet();	
 		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
 		
 		int rowsNumber=this.getRowsNumber();
 		
+		//This code adds a column at each row, with the value 0. This is used as a dummy
+		//column in order to detect whether the columns' numbering starts at a value
+		//greater than 0.
 		for(int row=1;row<=rowsNumber;row++){
 			list.add(new IndexKey(row,0));
 		}
@@ -424,23 +521,29 @@ public class DataFrame {
 		IndexKey newIndex;
 		int difference_col;
 	
-		int i=0;
-		while(i<list.size()-1)
+		//This for loop compares the IndexKeys in pairs.
+		//if it finds two IndexKeys where the number of columns
+		for(int i=0;i<list.size()-1;i++)	
 		{
+			
 			dummy1=list.get(i);
 			dummy2=list.get(i+1);
 			difference_col=dummy2.getColumn()-dummy1.getColumn();
 			
+
+			//if the column difference is more than 1, then
+			//remove the old IndexKey and add a new one
 			if(difference_col>1 && dummy1.getRow()==dummy2.getRow()){
 				newIndex=new IndexKey(dummy2.getRow(),dummy1.getColumn()+1);
 				DataPoint point=df.get(dummy2);
 				df.remove(dummy2);
 				df.put(newIndex, point);
+				//update the list accordingly
 				list.set(i+1, newIndex);	
-				i--;
+
 			}
 			
-			i++;
+		
 		}
 		
 	}
@@ -452,15 +555,19 @@ public class DataFrame {
 	 * have been removed.
 	 * 
 	 * Once a row is removed, the whole index needs to be rebuilt. The reason is that 
+	 * when retrieving rows or columns, the IndexKeys are supposed to be in order. The reason
+	 * is that the getRow and getColumn functions work by updating sequentially the IndexKey.
 	 * 
 	 */
 	private void rebuildIndexRow(){
+		//first we createa a list with all the index keys
 		int columnsNumber=getColumnsNumber();
 
 		Set<IndexKey> keys=df.keySet();	
 		ArrayList<IndexKey> list=new ArrayList<IndexKey>(keys);
 		
-		
+		//now, we add a row where the row number is 0. This row is used in order to check
+		//whether the new df is not starting at 1, but at some higher value (e.g. row 4).
 		for(int column=1;column<=columnsNumber;column++){
 			list.add(new IndexKey(0,column));
 		}
@@ -471,17 +578,20 @@ public class DataFrame {
 		IndexKey dummy1;
 		IndexKey dummy2;
 		IndexKey newIndex;
-	
 		int difference_row;
 		
 		
-
+//this for loop works by jumping from row to row. It starts by checking the first column
+//of each row
 		for(int i1=0;i1<list.size()-columnsNumber;i1=i1+columnsNumber){
 			
 			dummy1=list.get(i1);		
 			dummy2=list.get(i1+columnsNumber);
 			difference_row=dummy2.getRow()-dummy1.getRow();
 			
+			//if a difference was detected in the first column of the first row then
+			//operate on the whole row. Remove the IndexKey from the df, and then
+			//add a new IndexKey.
 			if(difference_row>1){
 			
 				for(int j=0;j<columnsNumber;j++){
@@ -492,6 +602,7 @@ public class DataFrame {
 					DataPoint point=df.get(dummy2);
 					df.remove(dummy2);
 					df.put(newIndex, point);
+					//update the list used in this loop
 					list.set(i1+j+columnsNumber, newIndex);				
 					System.out.println(newIndex.toString());
 				}			
@@ -524,6 +635,7 @@ public class DataFrame {
 	/**public String getRDataFrame()
 	 * 
 	 * Returns R code that builds a data.frame equivalent to this DataFrame.
+	 * @throws DataFrameIndexException 
 	 * 
 	 */
 	public String getRDataFrame(){
@@ -536,34 +648,53 @@ public class DataFrame {
 			
 			template=template+col.getName().replace("\"", "")+"=c(";
 			
-			ArrayList<DataPoint> list=this.getColumn(key);
-			
-			for(DataPoint point : list){
+			ArrayList<DataPoint> list;
+			try {
+				list = this.getColumn(key);
+				for(DataPoint point : list){
+					
+					template=template+point.toString()+",";
+					
+				}
+				template=template+"),";	
+				template=template+")";
+				template=template.replace(",)", ")");
 				
-				template=template+point.toString()+",";
-				
-			}
-			template=template+"),";			
+				//the symbol '?' is used for missing values, but in R we need to convert to NA
+				template=template.replace("?", "NA");
+				return template;
+			} catch (DataFrameIndexException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
 		}
-		
-		template=template+")";
-		template=template.replace(",)", ")");
-		
-		//the symbol '?' is used for missing values, but in R we need to convert to NA
-		template=template.replace("?", "NA");
-
-		return template;
+				return null;
 	}
 	
 	public String toString(){
 		
 		String dummy="";
 		for(int i=1;i<=this.getRowsNumber();i++){
-			dummy=dummy+"\n "+i+": "+this.getRow(i);
+			try {
+				dummy=dummy+"\n "+i+": "+this.getRow(i);
+			} catch (DataFrameIndexException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 			
-		return dummy;
+		return null;
 		
+	}
+	
+	public String getIndexKeyListString(){
+		String dummy="";
+		ArrayList<IndexKey> list=new ArrayList<IndexKey>(df.keySet());
+		Collections.sort(list,new compareIndexKey());
+    	for(IndexKey key: list){
+    		dummy=dummy+key.toString()+"\n"; 		
+    	}
+    	return dummy;
 	}
 	
 	//Helper class, used to compare IndexKeys by row. It is used when rebuilding the index.
