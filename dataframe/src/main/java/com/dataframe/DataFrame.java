@@ -20,6 +20,8 @@ import java.util.Set;
 *The class is based on a HashMap. The functions have been built taking
 *speed into account.
 *
+*Note: The missing values are represented by a '?'.
+*
 * @author Stylianos Kampakis
 * @version 0.1 March 3, 2015.
 */
@@ -687,6 +689,11 @@ public class DataFrame {
 		
 	}
 	
+	/**public String getIndexKeyListString()
+	 * 
+	 * Returns all the IndexKeys.
+	 * 
+	 */
 	public String getIndexKeyListString(){
 		String dummy="";
 		ArrayList<IndexKey> list=new ArrayList<IndexKey>(df.keySet());
@@ -695,6 +702,33 @@ public class DataFrame {
     		dummy=dummy+key.toString()+"\n"; 		
     	}
     	return dummy;
+	}
+	
+	/**public boolean applyLogicalToRow(ILogicalRowCheck check,int row) 
+	 * 
+	 * Applies a logical condition to a single row.
+	 * 
+	 * @throws	DataFrameIndexException
+	 * 
+	 */
+	public boolean applyLogicalToRow(ILogicalRowCheck check,int row) throws DataFrameIndexException{
+		
+		return check.rowConditionToCheck(this.getRow(row));
+		
+	}
+	
+	/**public boolean returnCountLogicalToRow(ILogicalRowCheck check,int row)
+	 * 
+	 * Applies a logical condition to a single row and then returns the number of times
+	 * it evaluated to true.
+	 * 
+	 * @throws	DataFrameIndexException
+	 * 
+	 */
+	public int applyCountLogicalToRow(ICountLogicalRowCheck check,int row) throws DataFrameIndexException{
+		
+		return check.rowCountConditionToCheck(this.getRow(row));
+		
 	}
 	
 	//Helper class, used to compare IndexKeys by row. It is used when rebuilding the index.
@@ -722,5 +756,42 @@ public class DataFrame {
 		
 
 	}
+	
+	/**public static class CheckIfMissing
+	 * 
+	 * This class is used to check if there are missing values in a row, in conjuction with
+	 * the method applyLogicalToRow.
+	 *
+	 */
+	public static class CheckIfMissing implements ILogicalRowCheck{
+
+		public boolean rowConditionToCheck(ArrayList<DataPoint> row) {
+			for(DataPoint point :row){
+				if(point.toString().equals("?")){
+					return true;
+				}			
+			}
+			return false;
+		}  	
+    }
+
+	/**public static class CheckMissingCount
+	 * 
+	 * This class is used to get the total number of missing values, used in conjuction with
+	 * the method applyCountLogicalToRow()
+	 *
+	 */
+	public static class CheckMissingCount implements ICountLogicalRowCheck{
+
+		public int rowCountConditionToCheck(ArrayList<DataPoint> row) {
+			int occurences=0;
+			for(DataPoint point :row){
+				if(point.toString().equals("?")){
+					occurences++;
+				}			
+			}
+			return occurences;
+		}  	
+    }
 	
 }
