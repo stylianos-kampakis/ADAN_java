@@ -1,0 +1,45 @@
+package com.sample
+ 
+import com.sample.DroolsTest.Message;
+import java.util.ArrayList;
+import com.dataframe.DataFrame;
+import com.dataframe.DataFrameIndexException;
+import com.dataframe.DataFrame.*;
+import com.factengine.*;
+import com.datautils.*;
+ 
+
+
+rule "factfactory missing"
+salience 1000
+	no-loop
+	when	
+		$row : FactRow(numberMissingValues>0 , numberMissingValues<2)
+		$impCommander : ImputationCommander()
+	then
+	    System.out.println($row.getRow()); 
+	    $impCommander.addRow($row.getRow());
+end
+
+rule "remove values"
+salience 500
+	no-loop
+	when	
+		$df: DataFrame()
+		$impCommander : ImputationCommander()
+	then
+	    System.out.println("i fired"); 
+	  	$p: DataUtils.imputeMean($df,$impCommander.getRows());
+end
+
+/*
+rule "factfactory impute"
+	no-loop
+	when	
+		$row : FactRow(numberMissingValues>0 , numberMissingValues<5)
+		$impCommander : ImputationCommander()
+	then
+	    System.out.println($row.getRow()); 
+	    $impCommander.addRow($row.getRow());
+end
+*/
