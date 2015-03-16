@@ -127,7 +127,6 @@ public class AppTest
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
     	
     }
 
@@ -148,7 +147,6 @@ public class AppTest
     public void testDropColumns(){
     	int[] columns={1,5};
     	df.dropColumns(columns);
-
     	
     	String[] strings=df.getIndexKeyListString().split("\n");
 
@@ -192,6 +190,15 @@ public class AppTest
     	Assert.assertTrue(strings[875].equals("146,6"));
     }
     
+    @Test
+    public void computeNumberofMissingValues(){
+    	try {
+			Assert.assertTrue(df_missing.getNumMissingValuesForRow(1)==2);
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
    //test that the attributes have the correct type
     
     //test for deep copy

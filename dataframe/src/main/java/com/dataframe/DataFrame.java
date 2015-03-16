@@ -420,6 +420,10 @@ public class DataFrame {
 		rebuildColumnsMap(columns);
 	}
 	
+	public void dropColumn(int column){
+		this.dropColumns(new int[]{column});
+	}
+	
 
 	/**private void rebuildColumnsMap(int[] columns)
 	 * 
@@ -478,6 +482,14 @@ public class DataFrame {
 		rebuildIndexRow();
 	}
 	
+public void dropRows(ArrayList<Integer> rows){
+		
+		for(int row : rows){
+			dropRowHelper(row);
+		}
+		rebuildIndexRow();
+	}
+	
 	
 	/**public void dropRow(int row)
 	 * 
@@ -485,7 +497,7 @@ public class DataFrame {
 	 *
 	 * 
 	 */
-	public void dropRows(int row){
+	public void dropRow(int row){
 		
 		dropRows(new int[]{row});
 
@@ -606,10 +618,44 @@ public class DataFrame {
 					df.put(newIndex, point);
 					//update the list used in this loop
 					list.set(i1+j+columnsNumber, newIndex);				
-					System.out.println(newIndex.toString());
 				}			
 			}
 		}
+	}
+	
+	/**public void setRow(int rowIndex,ArrayList<DataPoint> row)
+	 * 
+	 * Sets the row of the selected rowIndex to the particular row.
+	 * 
+	 * @param rowIndex the index (row) of the row.
+	 * @param the row(contents) that will replace the old row.
+	 * 
+	 */
+	public void setRow(int rowIndex, ArrayList<DataPoint> row){
+		
+	}
+	
+	/**public void setColumn(int columnIndex, ArrayList<DataPoint> column)
+	 * 
+	 * Sets the column of the selected columnIndex to the particular column.
+	 * 
+	 * @param columnIndex the index (column) of the column.
+	 * @param the column(contents) that will replace the old column.
+	 * 
+	 */
+	public void setColumn(int columnIndex, ArrayList<DataPoint> column){
+		
+	}
+	
+	/**public void setPoint(IndexKey key,DataPoint point)
+	 * 
+	 * Replaces a single point by a new point indexed by an IndexKey
+	 * 
+	 * @param key the IndexKey of the point that will be replaced
+	 * @param point the contents
+	 */
+	public void setPoint(IndexKey key,DataPoint point){
+		
 	}
 	
 	/**public HashSet<String> getFactors(ArrayList<DataPoint> column)
@@ -679,19 +725,21 @@ public class DataFrame {
 		for(int i=1;i<=this.getRowsNumber();i++){
 			try {
 				dummy=dummy+"\n "+i+": "+this.getRow(i);
+				
 			} catch (DataFrameIndexException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 			
-		return null;
+		return dummy;
 		
 	}
 	
 	/**public String getIndexKeyListString()
 	 * 
-	 * Returns all the IndexKeys.
+	 * Returns all the IndexKeys. Useful for debugging purposes and to check whether
+	 * the index has been rebuilt correctly after removing or adding rows/columns.
 	 * 
 	 */
 	public String getIndexKeyListString(){
@@ -731,6 +779,47 @@ public class DataFrame {
 		
 	}
 	
+	/**ArrayList<Integer> getRowsWithMissingValuesAboveThreshold(int threshold)
+	 * 
+	 * Gets all rows where the number of missing values is above a 
+	 * pre-specified threshold.
+	 * 
+	 * 
+	 * @param threshold
+	 * 
+	 */
+	public ArrayList<Integer> getRowsWithMissingValuesAboveThreshold(int threshold){
+		ArrayList<Integer> rows = new ArrayList<Integer>();
+		
+		for(int i=1;i<getRowsNumber()+1;i++){
+		try {
+			if(applyCountLogicalToRow(new DataFrame.CheckMissingCount(),i)>threshold){
+				rows.add(i);
+			}
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+		}
+		
+		return rows;		
+		
+	}
+	
+	/**public int getNumMissingValuesForRow(int row)
+	 * 
+	 * Gets the number of missing values for a particular row.
+	 * 
+	 * @throws DataFrameIndexException
+	 * 
+	 */
+	public int getNumMissingValuesForRow(int row) throws DataFrameIndexException{
+		return applyCountLogicalToRow(new DataFrame.CheckMissingCount(),row);
+	}
+	
+	
+	
 	//Helper class, used to compare IndexKeys by row. It is used when rebuilding the index.
 	private class compareIndexKey implements Comparator<IndexKey>{
 
@@ -753,9 +842,10 @@ public class DataFrame {
 				
 				return 0;
 		}
-		
 
 	}
+	
+	
 	
 	/**public static class CheckIfMissing
 	 * 
@@ -763,11 +853,11 @@ public class DataFrame {
 	 * the method applyLogicalToRow.
 	 *
 	 */
-	public static class CheckIfMissing implements ILogicalRowCheck{
+	public class CheckIfMissing implements ILogicalRowCheck{
 
 		public boolean rowConditionToCheck(ArrayList<DataPoint> row) {
 			for(DataPoint point :row){
-				if(point.toString().equals("?")){
+				if(point.getType().equals(DataFrame.DataPointType.NA)){
 					return true;
 				}			
 			}
@@ -781,12 +871,12 @@ public class DataFrame {
 	 * the method applyCountLogicalToRow()
 	 *
 	 */
-	public static class CheckMissingCount implements ICountLogicalRowCheck{
+	public class CheckMissingCount implements ICountLogicalRowCheck{
 
 		public int rowCountConditionToCheck(ArrayList<DataPoint> row) {
 			int occurences=0;
 			for(DataPoint point :row){
-				if(point.toString().equals("?")){
+				if(point.getType().equals(DataFrame.DataPointType.NA)){
 					occurences++;
 				}			
 			}

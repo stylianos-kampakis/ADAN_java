@@ -63,6 +63,17 @@ public class DataPoint implements Serializable {
 	}
 	
 	
+	public DataPoint(double number) {
+		this.point=number;
+		this.type=DataPointType.DOUBLE;
+	}
+	
+	public DataPoint(int number) {
+		this.point=number;
+		this.type=DataPointType.INTEGER;
+	}
+
+
 	/**private boolean isDouble(String str) 
 	 * 
 	 * Helper method used by the constructor.
@@ -128,6 +139,10 @@ public class DataPoint implements Serializable {
 			}			
 		
 		
+	}
+	
+	public Object getPoint(){
+		return this.point;
 	}
 	
 	 @Override
