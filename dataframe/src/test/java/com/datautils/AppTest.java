@@ -1,11 +1,16 @@
 package com.datautils;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
 
 
+
+
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,6 +62,24 @@ try {
 	ArrayList<DataPoint> points=DataUtils.impute(df_missing, 1, new DataUtils.meanImputor());
 	System.out.println(points.toString());
 	Assert.assertTrue(points.toString().equals("[5.854054054054055, 3.5, 1.8945945945945957, 0.2, 'setosa']"));
+} catch (DataFrameIndexException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+    
+    }
+    
+    
+    @Test
+    public void imputeMultipleRows()
+    {	
+try {
+	Set<Integer> rows=new HashSet<Integer>();
+	rows.add(1);
+	rows.add(2);
+	HashMap<Integer, ArrayList<DataPoint>> points=DataUtils.impute(df_missing, rows , new DataUtils.meanImputor());
+	//System.out.println(points.toString());
+	Assert.assertTrue(points.toString().equals("{1=[5.854054054054055, 3.5, 3.7891891891891913, 0.2, 'setosa'], 2=[4.9, 3.0, 1.4, 1.2135135135135142, 'setosa']}"));
 } catch (DataFrameIndexException e) {
 	// TODO Auto-generated catch block
 	e.printStackTrace();

@@ -2,13 +2,23 @@ package com.datautils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.dataframe.DataFrame;
 import com.dataframe.DataFrameIndexException;
 import com.dataframe.DataPoint;
 
 public class DataUtils {
+	
+	public static ArrayList<DataPoint> imputeMean(DataFrame df, int row) throws DataFrameIndexException{
+		return DataUtils.impute(df, row, new DataUtils.meanImputor());
+	}
+	
+	public static HashMap<Integer,ArrayList<DataPoint>> imputeMean(DataFrame df, Set<Integer> rows) throws DataFrameIndexException{
+		return DataUtils.impute(df, rows, new DataUtils.meanImputor());
+	}
 	
 	/**
 	 * 
@@ -26,8 +36,9 @@ public class DataUtils {
 		ArrayList<DataPoint> points=df.getRow(row);
 		
 		//first find where the missing values are
-		ArrayList<Integer> missing=getMissingColumnIndices(points);
+		Set<Integer> missing=getMissingColumnIndices(points);
 			
+		//The imput does not return a new row, but a map of the form <column, mean/median/mode/etc.>
 		HashMap<Integer,DataPoint> newValues=imputor.getImputedValues(missing,df);
 		for(Entry<Integer,DataPoint> point:newValues.entrySet()){
 			//we need to subtract 1, because the key is in DataFrame index and
@@ -38,10 +49,54 @@ public class DataUtils {
 		return points;
 	}
 	
+	/**
+	 * 
+	 * This method accepts an array of rows that need to be imputed.
+	 * NOTE: This method works ONLY for imputation methods that calculate statistics on a whole column.
+	 * Example statistics include mean/median/mode. It cannot be used with K-nn or other predictive methods
+	 * for example.
+	 * 
+	 * @param df
+	 * @param rows
+	 * @param imputor
+	 * @return
+	 * @throws DataFrameIndexException
+	 */
+public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, Set<Integer> rows, Imputor imputor) throws DataFrameIndexException{
+	
+	HashMap<Integer,ArrayList<DataPoint>> newRows=new HashMap<Integer,ArrayList<DataPoint>>();
+	ArrayList<DataPoint> points;
+	
+	HashMap<Integer,Double> means=new HashMap<Integer,Double>();
+	
+	for(int row:rows){
+		points=df.getRow(row);
+		Set<Integer> missing=getMissingColumnIndices(points);
+
+		//This part checks whether the mean for a particular column has been caclulated before
+		//If not, then it does calculate it. After that, the missing values in the row are replaced
+		//with the corresponding column mean.
+		for(int column:missing){
+			if(!means.containsKey(column)){
+				//in that case the 'imputor' is just calculating a mean or median
+				means.put(column, imputor.getImputedValues(column,df));
+			}
+			points.set(column-1,new DataPoint(means.get(column)));
+		
+		}
+		newRows.put(row, points);
+
+	}
+	
+	return newRows;
+		
+	}
+	
+	
 	//helper class that gets the columns of a row where missing values exist
-	private static ArrayList<Integer> getMissingColumnIndices(ArrayList<DataPoint> points)
+	private static Set<Integer> getMissingColumnIndices(ArrayList<DataPoint> points)
 	{
-		ArrayList<Integer> missing=new ArrayList<Integer>();
+		Set<Integer> missing=new HashSet<Integer>();
 		DataPoint point;
 		//we need to start at 1, because the indexing of columns starts at 1
 		for(int i=1;i<=points.size();i++){
@@ -62,7 +117,7 @@ public class DataUtils {
  * @param df
  * @return
  */
-public static HashMap<Integer, Double>  getMeans(ArrayList<Integer> columns, DataFrame df){
+public static HashMap<Integer, Double> getMeans(Set<Integer> columns, DataFrame df){
 	double sum;
 	int count_points=0;
 	ArrayList<DataPoint> points;
@@ -90,6 +145,21 @@ public static HashMap<Integer, Double>  getMeans(ArrayList<Integer> columns, Dat
 	
 	return means;
 }
+
+
+/**
+ * 
+ * Method that calculates the means of a single column.
+ * 
+ * @param columns
+ * @param df
+ * @return
+ */
+public static double getMeans(int column, DataFrame df){
+	Set<Integer> list=new HashSet<Integer>();
+	list.add(column);
+	return getMeans(list,df).get(column).doubleValue();
+}
 	
 	
 	//this is a 'delegate' for imputing missing values using the mean of a column
@@ -103,7 +173,7 @@ public static class meanImputor implements Imputor{
 	 * @param ArrayList<Integer> missing
 	 * @param DataFrame df
 	 */
-	public HashMap<Integer, DataPoint> getImputedValues(ArrayList<Integer> missing, DataFrame df) {
+	public HashMap<Integer, DataPoint> getImputedValues(Set<Integer> missing, DataFrame df) {
 		HashMap<Integer, Double> means=getMeans(missing,df);
 		HashMap<Integer, DataPoint> newValues = new HashMap<Integer,DataPoint>();
 		
@@ -112,6 +182,11 @@ public static class meanImputor implements Imputor{
 		}
 		
 		return newValues;
+	}
+	
+	public Double getImputedValues(int missing, DataFrame df) {
+
+		return getMeans(missing,df);
 	}
 }
 	

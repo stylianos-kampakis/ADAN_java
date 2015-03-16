@@ -1,10 +1,12 @@
 package com.dataframe;
 
 import com.datautils.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import com.dataframe.DataFrame.CheckIfMissing;
 import com.dataframe.DataFrame.CheckMissingCount;
@@ -23,13 +25,7 @@ public class App
     	DataFrame df=new DataFrame();
     	df.readCSV(path);
     
-    	try {
-			ArrayList<DataPoint> points=DataUtils.impute(df, 1, new DataUtils.meanImputor());
-		} catch (DataFrameIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+  
     	
     }
 
