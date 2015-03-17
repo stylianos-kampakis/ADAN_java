@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -39,11 +41,8 @@ public class DataFrame {
 	 * response variable of a model is in the set of the positive integers, then we	can use a
 	 * Poisson regression model.
 	*/
-	public enum DataPointType{INTEGER, DOUBLE, STRING, NA}
-	public enum DataPointSubType{POSITIVE_INTEGER, POSITIVE_REAL, FACTOR, ORDINAL_FACTOR, FREE_TEXT,NONE}
 	
-	public enum DatasetDescriptionTags{SCALED, NUMERIC_ONLY, NO_MISSING_VALUES};
-	
+		
 	/*A dataframe is a hashmap that contains keys and datapoints. A key is of the form (row,column).
 	 * This form is implemented because it can be faster for implementing various functions. When
 	 * collecting points from a row, or a column or any other combination thereof, a function can
@@ -199,18 +198,49 @@ public class DataFrame {
 		}
 		
 		ArrayList<DataPoint> result=new ArrayList<DataPoint>();
-		IndexKey key=new IndexKey(1,column);
 		
-		/*The method creates a key and then queries
-		 * hashmap to return the element for each key.
-		*/
-		for (int i=2;i<=this.getRowsNumber()+1;i++){
-			result.add(this.df.get(key));
-			key.setRow(i);
+		IterateColumn iter=new IterateColumn(column);
+		
+		while(iter.hasNext()){
+			result.add(iter.next());
 		}
 		
 		return result;
 	}
+	
+	
+	/**
+	 * 
+	 * Iterator class for iterating over a single column.
+	 * 
+	 * @author stelios
+	 *
+	 */
+ private class IterateColumn implements Iterator{
+
+	 IndexKey key;
+	 
+	 public IterateColumn(int column){
+		 this.key=new IndexKey(0,column);
+
+	 }
+	 
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		return key.getRow()<getRowsNumber();
+	}
+
+	public DataPoint next() {
+		if(hasNext()){
+			key.setRow(key.getRow()+1);
+			return df.get(key);
+		}
+		return null;
+	}
+	 
+ }
+	
+	
 	
 	/**public ArrayList<DataPoint> getColumn(string columnName)
 	 * 
@@ -246,26 +276,56 @@ public class DataFrame {
 	 *Returns an arraylist containing all the elements of a row
 	 *
 	 *@param column		the key (index) of the row.
-	 * @throws DataFrameIndexException 
+	 *@throws DataFrameIndexException 
 	 */
 	public ArrayList<DataPoint> getRow(int row) throws DataFrameIndexException{
 		
 		if(row>this.getRowsNumber() || row<1){
 			throw new DataFrameIndexException("Invalid row index.");
-		}
+		}		
 		
 		ArrayList<DataPoint> result=new ArrayList<DataPoint>();
-		IndexKey key=new IndexKey(row,1);
 		
-		for (int i=2;i<=this.getColumnsNumber()+1;i++){
-			result.add(this.df.get(key));
-			key.setColumn(i);
+		IterateRow iter=new IterateRow(row);
+		
+		while(iter.hasNext()){
+			result.add(iter.next());
 		}
-		
+				
 		return result;
 	}
 	
-	
+	/**
+	 * 
+	 * Iterator class for iterating over a single row.
+	 * 
+	 * @author stelios
+	 *
+	 */
+ private class IterateRow implements Iterator{
+
+
+	 IndexKey key;
+	 
+	 public IterateRow(int row){
+		 this.key=new IndexKey(row,0);
+
+	 }
+	 
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		return key.getColumn()<getColumnsNumber();
+	}
+
+	public DataPoint next() {
+		if(hasNext()){
+			key.setColumn(key.getColumn()+1);
+			return df.get(key);
+		}
+		return null;
+	}
+	 
+ }
 	
 	/**public void guessType()
 	 * 
@@ -632,7 +692,12 @@ public void dropRows(ArrayList<Integer> rows){
 	 * 
 	 */
 	public void setRow(int rowIndex, ArrayList<DataPoint> row){
+		IndexKey key=new IndexKey(rowIndex,0);
 		
+		for(int i=1;i<=getColumnsNumber();i++){
+			key.setColumn(i);
+			df.replace(key, row.get(i-1));
+		}
 	}
 	
 	/**public void setColumn(int columnIndex, ArrayList<DataPoint> column)
@@ -857,7 +922,7 @@ public void dropRows(ArrayList<Integer> rows){
 
 		public boolean rowConditionToCheck(ArrayList<DataPoint> row) {
 			for(DataPoint point :row){
-				if(point.getType().equals(DataFrame.DataPointType.NA)){
+				if(point.getType().equals(DataPointType.NA)){
 					return true;
 				}			
 			}
@@ -876,12 +941,45 @@ public void dropRows(ArrayList<Integer> rows){
 		public int rowCountConditionToCheck(ArrayList<DataPoint> row) {
 			int occurences=0;
 			for(DataPoint point :row){
-				if(point.getType().equals(DataFrame.DataPointType.NA)){
+				if(point.getType().equals(DataPointType.NA)){
 					occurences++;
 				}			
 			}
 			return occurences;
 		}  	
     }
+
+	public void setRows(HashMap<Integer, ArrayList<DataPoint>> imputed) {
+		
+		for(Entry<Integer, ArrayList<DataPoint>> entry : imputed.entrySet()){
+			
+			setRow(entry.getKey(), entry.getValue());
+			
+		}
+		
+	}
+
+	public HashMap<Integer,ArrayList<DataPoint>> getRows(ArrayList<Integer> rows) throws DataFrameIndexException {
+
+		HashMap<Integer, ArrayList<DataPoint>> rowsMap=new HashMap<Integer,ArrayList<DataPoint>>();
+		
+		for(Integer row:rows){
+			rowsMap.put(row, getRow(row));
+		}
+		
+		return rowsMap;
+	}
+	
+	
+	public HashMap<Integer,ArrayList<DataPoint>> getRows(int[] rows) throws DataFrameIndexException {
+	
+		ArrayList<Integer> list=new ArrayList<Integer>();
+	
+		for(int row:rows){
+			list.add(row);
+		}
+		
+		return getRows(list);
+	}
 	
 }

@@ -14,6 +14,4 @@ public interface Imputor {
 
 	//this method is used when dealing with a single missing value
 	Double getImputedValues(int column, DataFrame df);
-
-
 }

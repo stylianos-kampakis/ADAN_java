@@ -3,8 +3,8 @@ package com.dataframe;
 
 import java.util.Set;
 
-import com.dataframe.DataFrame.DataPointSubType;
-import com.dataframe.DataFrame.DataPointType;
+import com.dataframe.DataPointSubType;
+
 
 public class Column {
 	protected Set<String> factors;

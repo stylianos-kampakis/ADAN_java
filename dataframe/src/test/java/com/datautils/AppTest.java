@@ -21,6 +21,7 @@ import com.dataframe.DataFrameIndexException;
 import com.dataframe.DataPoint;
 import com.dataframe.IndexKey;
 
+
 /**
  * Unit test for simple App.
  */
@@ -84,6 +85,21 @@ try {
 	// TODO Auto-generated catch block
 	e.printStackTrace();
 }
-    
+
     }
+
+    @Test
+    public void testImputation(){
+    	
+    	try {
+        	df_missing.setRows(DataUtils.impute(df_missing, new int[]{2,3,5,7,8,14}, new DataUtils.meanImputor()));
+			df_missing.getRows(new int[]{2,3,5,7,8,14});
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    Assert.assertTrue(true);
+    }
+
+
 }

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dataframe.DataFrame.DataPointSubType;
-import com.dataframe.DataFrame.DataPointType;
+import com.dataframe.DataPointSubType;
+
 
 
 /** DataPoint
