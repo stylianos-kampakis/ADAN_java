@@ -4,6 +4,4 @@ public class FactModel extends Fact {
 	
 	String modelName;
 	
-	
-
 }

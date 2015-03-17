@@ -16,6 +16,5 @@ public void addRow(int i){
 	this.rows.add(i);
 }
 
-
 	
 }
