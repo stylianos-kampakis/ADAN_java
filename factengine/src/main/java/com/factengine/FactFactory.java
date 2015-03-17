@@ -8,6 +8,15 @@ import org.kie.api.runtime.KieSession;
 import com.dataframe.DataFrame;
 import com.dataframe.DataFrameIndexException;
 
+/**
+ * The FactFactory class contains methods that get 
+ * as input a DataFrame or another object and then comes back with an ArrayList of facts.
+ * These facts should be inserted in a kieSession and reasoned upon.
+ * 
+ * 
+ * @author stelios
+ *
+ */
 public class FactFactory {
 
 	/**
