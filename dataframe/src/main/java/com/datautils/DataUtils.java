@@ -45,8 +45,7 @@ public class DataUtils {
 			//we need to subtract 1, because the key is in DataFrame index and
 			//the columns start at 1.
 			points.set(point.getKey()-1,point.getValue());
-		}
-	
+		}	
 		return points;
 	}
 	
@@ -83,14 +82,10 @@ public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, Set<Int
 				means.put(column, imputor.getImputedValues(column,df));
 			}
 			points.set(column-1,new DataPoint(means.get(column)));
-		
 		}
 		newRows.put(row, points);
-
-	}
-	
-	return newRows;
-		
+	}	
+	return newRows;		
 	}
 	
 

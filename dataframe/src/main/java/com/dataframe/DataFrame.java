@@ -811,19 +811,20 @@ public class DataFrame {
 
 				}
 				template = template + "),";
-				template = template + ")";
-				template = template.replace(",)", ")");
-
-				// the symbol '?' is used for missing values, but in R we need
-				// to convert to NA
-				template = template.replace("?", "NA");
-				return template;
+			
 			} catch (DataFrameIndexException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return null;
+		
+		template=template+")";
+		template = template.replace(",)", ")");
+
+		// the symbol '?' is used for missing values, but in R we need
+		// to convert to NA
+		template = template.replace("?", "NA");
+		return template;
 	}
 
 	public String toString() {
@@ -862,22 +863,30 @@ public class DataFrame {
 	}
 
 	/**
-	 * public boolean applyLogicalToRow(ILogicalRowCheck check,int row)
 	 * 
 	 * Applies a logical condition to a single row.
 	 * 
 	 * @throws DataFrameIndexException
 	 * 
 	 */
-	public boolean applyLogicalToRow(ILogicalRowCheck check, int row)
-			throws DataFrameIndexException {
-
-		return check.rowConditionToCheck(this.getRow(row));
-
+	public boolean applyLogicalToRow(ILogicalCheck check, int row)
+			throws DataFrameIndexException {		
+		return check.conditionToCheck(this.getRow(row));	
+	}
+	
+	/**
+	 * 
+	 * Applies a logical condition to a single column.
+	 * 
+	 * @throws DataFrameIndexException
+	 * 
+	 */
+	public boolean applyLogicalToColumn(ILogicalCheck check, int column)
+			throws DataFrameIndexException {		
+		return check.conditionToCheck(this.getRow(column));	
 	}
 
 	/**
-	 * public boolean returnCountLogicalToRow(ILogicalRowCheck check,int row)
 	 * 
 	 * Applies a logical condition to a single row and then returns the number
 	 * of times it evaluated to true.
@@ -885,11 +894,22 @@ public class DataFrame {
 	 * @throws DataFrameIndexException
 	 * 
 	 */
-	public int applyCountLogicalToRow(ICountLogicalRowCheck check, int row)
+	public int applyCountLogicalToRow(ICountLogicalCheck check, int row)
 			throws DataFrameIndexException {
-
-		return check.rowCountConditionToCheck(this.getRow(row));
-
+		return check.countConditionToCheck(this.getRow(row));
+	}
+	
+	/**
+	 * 
+	 * Applies a logical condition to a single column and then returns the number
+	 * of times it evaluated to true.
+	 * 
+	 * @throws DataFrameIndexException
+	 * 
+	 */
+	public int applyCountLogicalToColumn(ICountLogicalCheck check, int column)
+			throws DataFrameIndexException {
+		return check.countConditionToCheck(this.getColumn(column));
 	}
 
 	/**
@@ -934,6 +954,15 @@ public class DataFrame {
 			throws DataFrameIndexException {
 		return applyCountLogicalToRow(new DataFrame.CheckMissingCount(), row);
 	}
+	
+	
+	public int getNumMissingValuesForColumn(int column)
+			throws DataFrameIndexException {
+		// TODO Auto-generated method stub
+		return applyCountLogicalToColumn(new DataFrame.CheckMissingCount(), column);
+	}
+
+
 
 	// Helper class, used to compare IndexKeys by row. It is used when
 	// rebuilding the index.
@@ -963,14 +992,14 @@ public class DataFrame {
 	/**
 	 * public static class CheckIfMissing
 	 * 
-	 * This class is used to check if there are missing values in a row, in
-	 * conjuction with the method applyLogicalToRow.
+	 * This class is used to check if there are missing values in a row or column, in
+	 * conjuction with the method applyLogicalToRow or applyLogicalToColumn.
 	 *
 	 */
-	public class CheckIfMissing implements ILogicalRowCheck {
+	public class CheckIfMissing implements ILogicalCheck {
 
-		public boolean rowConditionToCheck(ArrayList<DataPoint> row) {
-			for (DataPoint point : row) {
+		public boolean conditionToCheck(ArrayList<DataPoint> list) {
+			for (DataPoint point : list) {
 				if (point.getType().equals(DataPointType.NA)) {
 					return true;
 				}
@@ -983,14 +1012,16 @@ public class DataFrame {
 	 * public static class CheckMissingCount
 	 * 
 	 * This class is used to get the total number of missing values, used in
-	 * conjuction with the method applyCountLogicalToRow()
+	 * conjuction with the method applyCountLogicalToRow() or applyCountLogicalToColumn()
+	 * 
+	 * It is a 'delegate' with only one method, accepting an ArrayList of DataPoints (row or column)
 	 *
 	 */
-	public class CheckMissingCount implements ICountLogicalRowCheck {
+	public class CheckMissingCount implements ICountLogicalCheck {
 
-		public int rowCountConditionToCheck(ArrayList<DataPoint> row) {
+		public int countConditionToCheck(ArrayList<DataPoint> list) {
 			int occurences = 0;
-			for (DataPoint point : row) {
+			for (DataPoint point : list) {
 				if (point.getType().equals(DataPointType.NA)) {
 					occurences++;
 				}
@@ -998,6 +1029,8 @@ public class DataFrame {
 			return occurences;
 		}
 	}
+	
+
 
 	/**
 	 * This method is used in order to set the change the values of many rows at
@@ -1058,5 +1091,9 @@ public class DataFrame {
 
 		return getRows(list);
 	}
+
+
+
+	
 
 }

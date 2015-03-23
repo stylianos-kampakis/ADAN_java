@@ -199,7 +199,14 @@ public class AppTest
 			e.printStackTrace();
 		}
     }
-   //test that the attributes have the correct type
-    
-    //test for deep copy
+   
+    @Test
+    public void computeNumberofMissingValuesForColumn(){
+    	try {
+			Assert.assertTrue(df_missing.getNumMissingValuesForColumn(1)==2);
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }

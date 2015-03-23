@@ -6,7 +6,7 @@ import java.util.Set;
 import com.dataframe.DataFrame;
 import com.dataframe.DataPoint;
 
-//the imputor interface is used to construct 'delegates' that impute 
+//the imputor interface is used to construct 'delegates' that impute. These delegates are used by MathUtils.
 public interface Imputor {
 
 	//this method is used when dealing with lots of missing values
