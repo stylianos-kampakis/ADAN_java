@@ -4,9 +4,11 @@ public class FactColumn extends Fact {
 	
 	int numberMissingValues;
 	int column;
+	int numRows;
 	
-	FactColumn(int column){
+	FactColumn(int column,int numRows){
 		this.column=column;
+		this.numRows=numRows;
 	}
 	
 	public int getColumn(){
@@ -17,8 +19,16 @@ public class FactColumn extends Fact {
 		return numberMissingValues;
 	}
 	
+	public int getNumRows(){
+		return this.numRows;
+	}
+	
 	public void setNumberMissingValues(int numMissingValues){
 		this.numberMissingValues=numMissingValues;
+	}
+	
+	public double getPercentageMissingValues(){
+		return (double)getNumberMissingValues()/(double)getNumRows();
 	}
 
 }

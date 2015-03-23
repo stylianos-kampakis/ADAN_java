@@ -1,7 +1,5 @@
 package com.factengine;
 
-import java.util.ArrayList;
-
 /**
  * Support Vector Machine facts.
  * 
@@ -23,10 +21,12 @@ public class SVMFactModel extends FactModel {
 				ModelProperties.SENSITIVE_TO_MONOTONIC_TRANSFORM,
 				ModelProperties.SENSITIVE_TO_OUTLIERS,
 				
-				ModelProperties.GOOD_HIGH_DIMENSIONAL_DATA	
+				ModelProperties.GOOD_HIGH_DIMENSIONAL_DATA,
+				
+				ModelProperties.EXTRACTS_LINEAR_COMBINATIONS
 		
 		});
-		// TODO Auto-generated constructor stub
+
 	}
 
 }

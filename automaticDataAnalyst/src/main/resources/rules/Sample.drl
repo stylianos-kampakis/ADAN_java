@@ -1,16 +1,16 @@
 package com.sample
  
-import com.sample.DroolsTest.Message;
 import java.util.ArrayList;
 import com.dataframe.DataFrame;
 import com.dataframe.DataFrameIndexException;
 import com.dataframe.DataFrame.*;
 import com.factengine.*;
 import com.datautils.*;
+import com.factengine.ColumnRemovalCommander;
  
 
 
-rule "factfactory missing"
+rule "choose rows to be imputed"
 salience 1000
 	no-loop
 	when	
@@ -21,15 +21,83 @@ salience 1000
 	    $impCommander.addRow($row.getRow());
 end
 
-rule "remove values"
+
+rule "impute rows"
+salience 900
+	no-loop
+	when
+		$df: DataFrame()
+		$impCommander : ImputationCommander()
+	then
+		$impCommander.impute($df);
+end
+
+rule "choose columns to remove"
+salience 800
+	no-loop
+	when
+		$col: FactColumn(PercentageMissingValues>0.8);
+		$colCommander: ColumnRemovalCommander()
+	then
+		$colCommander.addColumn($col.getColumn());
+end
+
+rule "removal of columns"
+salience 700
+	no-loop
+	when
+		$df: DataFrame()
+		$colCommander: ColumnRemovalCommander()
+	then
+		$colCommander.removeColumns($df);
+end
+
+rule "choose rows to be removed"
+salience 600
+	no-loop
+	when	
+		$row : FactRow(numberMissingValues>0 , numberMissingValues<2)
+		$rowCommander : RowRemovalCommander()
+	then
+	    $rowCommander.addRow($row.getRow());
+end
+
+rule "removal of rows"
 salience 500
 	no-loop
 	when	
 		$df: DataFrame()
-		$impCommander : ImputationCommander()
+		$rowRemovalCommander : RowRemovalCommander()
 	then
 	    System.out.println("i fired"); 
-	  	$p: DataUtils.imputeMean($df,$impCommander.getRows());
+	    $rowRemovalCommander.removeRows($df);	  	
+end
+
+rule "clean up names"
+salience 400
+	no-loop
+	when	
+	
+	then
+	  	
+end
+
+rule "detect outliers"
+salience 400
+	no-loop
+	when	
+	
+	then
+	  	
+end
+
+rule "remove outliers"
+salience 300
+	no-loop
+	when	
+	
+	then
+	  	
 end
 
 /*

@@ -498,6 +498,20 @@ public class DataFrame {
 		rebuildIndexColumn();
 		rebuildColumnsMap(columns);
 	}
+	
+
+
+	public void dropColumns(Set<Integer> columns) {
+		
+		
+		for (Integer col : columns) {
+			dropColumnHelper(col);
+
+		}
+		rebuildIndexColumn();
+		rebuildColumnsMap(columns);
+		
+	}
 
 	public void dropColumn(int column) {
 		this.dropColumns(new int[] { column });
@@ -509,14 +523,38 @@ public class DataFrame {
 	 * This is used to rebuild the HashMap that contains the column id-name
 	 * mappings.
 	 * 
-	 * @param columns
-	 *            an int[] array of columns that were removed.
+	 * @param columns an int[] array of columns that were removed.
+	 *            
 	 * 
 	 */
 	private void rebuildColumnsMap(int[] columns) {
+		Set<Integer> set=new HashSet<Integer>();
+		for (int column : columns) {
+			set.add(column);
+		}
+
+		this.rebuildColumnsMapHelper(set);
+
+	}
+	
+	
+	/**
+	 * 
+	 * @param columns
+	 */
+	private void rebuildColumnsMap(Set<Integer> columns) {
+		this.rebuildColumnsMapHelper(columns);
+	}
+
+	
+	/**
+	 * 
+	 * @param columns
+	 */
+	private void rebuildColumnsMapHelper(Iterable<Integer> columns){
 		HashMap<Integer, Column> dummyColumns = new HashMap<Integer, Column>();
 
-		for (int column : columns) {
+		for (Integer column : columns) {
 			for (Entry<Integer, Column> entry : this.Columns.entrySet()) {
 				if (entry.getKey() > column) {
 					dummyColumns.put(entry.getKey() - 1, entry.getValue());
@@ -530,7 +568,7 @@ public class DataFrame {
 
 		Columns = dummyColumns;
 	}
-
+	
 	/**
 	 * protected void dropRowHelper(int row)
 	 * 
@@ -566,6 +604,14 @@ public class DataFrame {
 	}
 
 	public void dropRows(ArrayList<Integer> rows) {
+
+		for (int row : rows) {
+			dropRowHelper(row);
+		}
+		rebuildIndexRow();
+	}
+	
+	public void dropRows(Set<Integer> rows) {
 
 		for (int row : rows) {
 			dropRowHelper(row);
@@ -1091,6 +1137,8 @@ public class DataFrame {
 
 		return getRows(list);
 	}
+
+
 
 
 

@@ -21,6 +21,22 @@ public class DataUtils {
 		return DataUtils.impute(df, rows, new DataUtils.meanImputor());
 	}
 	
+	public static ArrayList<DataPoint> imputeMedian(DataFrame df, int row) throws DataFrameIndexException{
+		return DataUtils.impute(df, row, new DataUtils.medianImputor());
+	}
+	
+	public static HashMap<Integer,ArrayList<DataPoint>> imputeMedian(DataFrame df, Set<Integer> rows) throws DataFrameIndexException{
+		return DataUtils.impute(df, rows, new DataUtils.medianImputor());
+	}
+	
+	public static ArrayList<DataPoint> imputeKnn(DataFrame df, int row) throws DataFrameIndexException{
+		return DataUtils.impute(df, row, new DataUtils.knnImputor());
+	}
+	
+	public static HashMap<Integer,ArrayList<DataPoint>> imputeKnn(DataFrame df, Set<Integer> rows) throws DataFrameIndexException{
+		return DataUtils.impute(df, rows, new DataUtils.knnImputor());
+	}
+	
 	/**
 	 * 
 	 * Method that returns a new row, with the missing values imputed. The method requires an 
@@ -32,7 +48,7 @@ public class DataUtils {
 	 * @return an ArrayList<DataPoint> with the new row
 	 * @throws DataFrameIndexException
 	 */
-	public static ArrayList<DataPoint> impute(DataFrame df, int row, Imputor imputor) throws DataFrameIndexException{
+	public static ArrayList<DataPoint> impute(DataFrame df, int row, IImputor imputor) throws DataFrameIndexException{
 		
 		ArrayList<DataPoint> points=df.getRow(row);
 		
@@ -62,7 +78,7 @@ public class DataUtils {
 	 * @return
 	 * @throws DataFrameIndexException
 	 */
-public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, Set<Integer> rows, Imputor imputor) throws DataFrameIndexException{
+public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, Set<Integer> rows, IImputor imputor) throws DataFrameIndexException{
 	
 	HashMap<Integer,ArrayList<DataPoint>> newRows=new HashMap<Integer,ArrayList<DataPoint>>();
 	ArrayList<DataPoint> points;
@@ -102,7 +118,7 @@ public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, Set<Int
  * @return
  * @throws DataFrameIndexException
  */
-public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, int[] rows, Imputor imputor) throws DataFrameIndexException{
+public static HashMap<Integer,ArrayList<DataPoint>> impute(DataFrame df, int[] rows, IImputor imputor) throws DataFrameIndexException{
 
 	Set<Integer> rowSet=new HashSet<Integer>();
 			
@@ -203,7 +219,7 @@ public static double getMeans(int column, DataFrame df){
 	
 	
 	//this is a 'delegate' for imputing missing values using the mean of a column
-public static class meanImputor implements Imputor{		
+public static class meanImputor implements IImputor{		
 
 	/**
 	 * This method calculates the means of each column where a missing value exists and then
@@ -228,6 +244,35 @@ public static class meanImputor implements Imputor{
 		return getMeans(missing,df);
 	}
 }
+
+public static class medianImputor implements IImputor{
+
+	public HashMap<Integer, DataPoint> getImputedValues(Set<Integer> missing,
+			DataFrame df) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Double getImputedValues(int column, DataFrame df) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
+}
+
+public static class knnImputor implements IImputor{
+
+	public HashMap<Integer, DataPoint> getImputedValues(Set<Integer> missing,
+			DataFrame df) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Double getImputedValues(int column, DataFrame df) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}
 	
 }
