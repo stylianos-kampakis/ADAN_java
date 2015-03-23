@@ -11,7 +11,8 @@ import rcaller.RCode;
 
 public class RLinearRegressionProvider extends RProviderBase implements ILinearRegression {
 	
-		
+	//This variable indicates whether a model exists or not. Once a model has been fit
+	//to a dataset, then this variable is set to true.
 	private boolean modelExists=false;
 	
 	
@@ -23,6 +24,11 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		super(path);
 	}
 
+	/**
+	 * Fits a linear regression model to the specified dataframe, by using the function 'lm' of R.
+	 * It assumes that all the variables, besides the response, are covariates.
+	 * 
+	 */
 	public String fit(String response, DataFrame df) {
 		initialize();
 		
@@ -50,6 +56,11 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		return null;		
 	}
 
+	/**
+	 * Fits a linear regression model to the specified dataframe, by using the function 'lm' of R.
+	 * The user needs to specify the names of the covariates in the 'Covariates' argument.
+	 * 
+	 */
 	public String fit(String response, DataFrame df, String[] covariates) {
 		initialize();
 		
@@ -85,6 +96,12 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		
 	}
 
+	/**
+	 * Makes predictions for a new dataset. The model should have been fit first to a dataset, otherwise
+	 * the function will not run.
+	 * 
+	 * 
+	 */
 	public double[] predict(DataFrame df) throws IllegalStateException {
 		if(modelExists=true){
 		String dfR=df.getRDataFrame();
@@ -104,6 +121,9 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 
 
 
+	/**
+	 * Gets the fitted values from the last fit of the model to a dataset.
+	 */
 	public double[] getFitted() {
 		if(modelExists=true){
 			String template="results=fitted(lm1)";
@@ -120,6 +140,10 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 
+	/**
+	 * Gets the Akaike Information Criterion from the last fit of the model.
+	 * 
+	 */
 	public double getAIC() {
 		if(modelExists=true){
 			String template="results=AIC(lm1)";
@@ -136,6 +160,10 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 
+	/**
+	 * Gets the Bayesian Information Criterion from the last fit of the model.
+	 * 
+	 */
 	public double getBIC() {
 		if(modelExists=true){
 			String template="results=BIC(lm1)";
@@ -151,7 +179,13 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 				throw new IllegalStateException("There must a model that has been fit first.");
 			}
 	}
+	
 
+	
+	/**
+	 * Gets the log likelihood from the last fit of the model.
+	 * 
+	 */
 	public double getLogLikelihood() {
 		if(modelExists=true){
 			String template="results=summary(logLik(lm1))[[1]]";
@@ -168,6 +202,12 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 
+	
+	
+	/**
+	 * Gets the coefficients from the last fit of the model.
+	 * 
+	 */
 	public HashMap<String,Double> getCoefficients() {
 		if(modelExists=true){
 			
@@ -193,7 +233,11 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 				throw new IllegalStateException("There must a model that has been fit first.");
 			}
 	}
-
+	
+	/**
+	 * Gets the R squared from the last fit of the model.
+	 * 
+	 */
 	public double rSquared() {
 		if(modelExists=true){
 			String template="results=summary(lm1)$r.squared";
@@ -210,6 +254,10 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 	
+	/**
+	 * Gets the adjusted r squared from the last fit of the model.
+	 * 
+	 */
 	public double adjustedRSquared() {
 		if(modelExists=true){
 			String template="results=summary(lm1)$adj.r.squared";
@@ -217,6 +265,32 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			code.addRCode(template);
 			caller.setRCode(code);
 			caller.runAndReturnResultOnline("results");
+			double[] results=caller.getParser().getAsDoubleArray("results");
+			
+			return results[0];
+			}
+			else{
+				throw new IllegalStateException("There must a model that has been fit first.");
+			}
+	}
+	
+	/**
+	 * Gets the p-values of the coefficients.
+	 * 
+	 */
+	public double getPvalueCoefficients() {
+		if(modelExists=true){
+			String template="results=summary(lm1)$coefficients[,4]";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			try {
+				System.out.println(caller.getParser().getXMLFileAsString());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			double[] results=caller.getParser().getAsDoubleArray("results");
 			
 			return results[0];

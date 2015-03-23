@@ -77,10 +77,10 @@ public class AppTest
     @Test
     public void testChooseCovariatesLinearRegression(){
     	String result=rinter.fit("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
-    	//System.out.println(result);
+    	System.out.println(result);
     	//we are using only a single coefficient int the assertion because the result string is
     	//too long.
-    Assert.assertTrue(result.contains("<value>2.24914016038323"));
+    Assert.assertTrue(result.contains("2.24914016038323"));
     
 
     
