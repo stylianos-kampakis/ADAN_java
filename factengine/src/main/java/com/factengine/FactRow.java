@@ -11,13 +11,19 @@ public class FactRow extends Fact {
 
 	int numberMissingValues;
 	int row;
+	int numColumns;
 	
-	FactRow(int row){
+	FactRow(int row, int numColumns){
 		this.row=row;
+		this.numColumns=numColumns;
 	}
 	
 	public int getRow(){
 		return row;
+	}
+	
+	public int getNumColumns(){
+		return numColumns;
 	}
 	
 	public int getNumberMissingValues(){
@@ -26,6 +32,11 @@ public class FactRow extends Fact {
 	
 	public void setNumberMissingValues(int numMissingValues){
 		this.numberMissingValues=numMissingValues;
+	}
+	
+	
+	public double getPercentageMissingValues(){
+		return (double)getNumberMissingValues()/(double)getNumColumns();
 	}
 	
 }

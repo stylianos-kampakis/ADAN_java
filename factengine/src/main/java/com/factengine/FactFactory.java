@@ -34,7 +34,7 @@ public class FactFactory {
 		
 		for(int i=1;i<=df.getRowsNumber();i++){
 			//The fact row is constructed taking the row number as the argument
-			fact=new FactRow(i);
+			fact=new FactRow(i,df.getColumnsNumber());
 			try {
 				fact.setNumberMissingValues(df.getNumMissingValuesForRow(i));
 				factRow.add(fact);
