@@ -33,9 +33,10 @@ public class FactFactory {
 		FactRow fact;
 		
 		for(int i=1;i<=df.getRowsNumber();i++){
+			//The fact row is constructed taking the row number as the argument
 			fact=new FactRow(i);
 			try {
-				fact.setNumberMissingValues(df.applyCountLogicalToRow(df.new CheckMissingCount(),i));
+				fact.setNumberMissingValues(df.getNumMissingValuesForRow(i));
 				factRow.add(fact);
 			} catch (DataFrameIndexException e) {
 				// TODO Auto-generated catch block
@@ -44,6 +45,26 @@ public class FactFactory {
 						
 		}
 		return factRow;		
+	}
+	
+	public ArrayList<FactColumn> getMissingColumnFacts(DataFrame df){
+		
+		ArrayList<FactColumn> factColumn=new ArrayList<FactColumn>();
+		FactColumn fact;
+		
+		for(int i=1;i<=df.getColumnsNumber();i++){
+			//The fact row is constructed taking the row number as the argument
+			fact=new FactColumn(i);
+			try {
+				fact.setNumberMissingValues(df.getNumMissingValuesForColumn(i));
+				factColumn.add(fact);
+			} catch (DataFrameIndexException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+						
+		}
+		return factColumn;		
 	}
 	
 	/**
