@@ -32,6 +32,8 @@ salience 900
 		$impCommander.impute($df);
 end
 
+
+
 rule "choose columns to remove"
 salience 800
 	no-loop
@@ -41,6 +43,8 @@ salience 800
 	then
 		$colCommander.addColumn($col.getColumn());
 end
+
+
 
 rule "removal of columns"
 salience 700
@@ -52,15 +56,19 @@ salience 700
 		$colCommander.removeColumns($df);
 end
 
+
+
 rule "choose rows to be removed"
 salience 600
 	no-loop
 	when	
-		$row : FactRow(numberMissingValues>0 , numberMissingValues<2)
+		$row : FactRow(numberMissingValues>1)
 		$rowCommander : RowRemovalCommander()
 	then
 	    $rowCommander.addRow($row.getRow());
 end
+
+
 
 rule "removal of rows"
 salience 500
@@ -73,6 +81,8 @@ salience 500
 	    $rowRemovalCommander.removeRows($df);	  	
 end
 
+
+
 rule "clean up names"
 salience 400
 	no-loop
@@ -82,8 +92,10 @@ salience 400
 	  	
 end
 
+
+
 rule "detect outliers"
-salience 400
+salience 300
 	no-loop
 	when	
 	
@@ -91,8 +103,10 @@ salience 400
 	  	
 end
 
+
+
 rule "remove outliers"
-salience 300
+salience 200
 	no-loop
 	when	
 	

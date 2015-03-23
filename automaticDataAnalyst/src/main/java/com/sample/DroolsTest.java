@@ -18,6 +18,7 @@ import com.factengine.Fact;
 import com.factengine.FactFactory;
 import com.factengine.FactRow;
 import com.factengine.ImputationCommander;
+import com.factengine.RowRemovalCommander;
 import com.datautils.*;
 /**
  * This is a sample class to launch a rule.
@@ -38,24 +39,22 @@ public class DroolsTest {
 
         	FactFactory factFactory=new FactFactory();
         	List<FactRow> factsRows=factFactory.getMissingRowFacts(df);
-        	ImputationCommander imputationCommander=new ImputationCommander();
+        	ImputationCommander imputationCommander=new ImputationCommander(new DataUtils.meanImputor());
+        	RowRemovalCommander rowCommander=new RowRemovalCommander();
         	
         	factFactory.factInsertor(kSession, factsRows);
-    			//kSession.insert(factsRows);
+    			
     		//System.out.println(kSession.getFactCount());	
         	kSession.insert(df);
         	kSession.insert(imputationCommander);
+        	kSession.insert(rowCommander);
     		kSession.fireAllRules();
-    		System.out.println(imputationCommander.getRows().toString());
+    		System.out.println(df.getRows(imputationCommander.getRows()));
+    		System.out.println(df.getRows(1,15));
     		
-    		HashMap<Integer, ArrayList<DataPoint>> imputed= DataUtils.imputeMean(df, imputationCommander.getRows());
-    		df.setRows(imputed);
-    		System.out.println(df.getRows(new int[]{2,3,5,7,8,14}));
     		
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
-
-
 }
