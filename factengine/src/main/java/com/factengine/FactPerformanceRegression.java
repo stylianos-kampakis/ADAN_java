@@ -1,6 +1,7 @@
 package com.factengine;
 
 import com.analysisInterface.Algorithms;
+import com.analysisInterface.ParameterSet;
 import com.analysisInterface.PerformanceStatistics;
 import com.analysisInterface.PredictionResultSet;
 
@@ -14,17 +15,23 @@ public class FactPerformanceRegression implements IFactPerformance {
 	double ccc;
 	
 	PerformanceStatistics statistics=new PerformanceStatistics();
+	ParameterSet parameters;
 	
 	FactModel model;
 	
-	FactPerformanceRegression(FactModel model,PredictionResultSet results){
+	FactPerformanceRegression(FactModel model,PredictionResultSet results, ParameterSet parameters){
 		setRMSE(statistics.RMSE(results));
 		setMAE(statistics.MAE(results));
 		setCcc(statistics.concordanceCorrelation(results));
+		this.parameters=parameters;
 	}
 	
 	public Algorithms getModelName(){
 		return model.getModelName();
+	}
+	
+	public ParameterSet getParameters(){
+		return parameters;
 	}
 	
 	
@@ -32,13 +39,13 @@ public class FactPerformanceRegression implements IFactPerformance {
 		return RMSE;
 	}
 	public void setRMSE(double RMSE) {
-		RMSE = RMSE;
+		this.RMSE = RMSE;
 	}
 	public double getMAE() {
 		return MAE;
 	}
-	public void setMAE(double mAE) {
-		MAE = mAE;
+	public void setMAE(double MAE) {
+		this.MAE = MAE;
 	}
 	public double getCorr() {
 		return corr;

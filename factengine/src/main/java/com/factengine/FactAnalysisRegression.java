@@ -28,22 +28,21 @@ public class FactAnalysisRegression implements IFactAnalysisModel {
 		return performance;
 	}
 
-	public void crossVal(DataFrame df){
+	public FactPerformanceRegression crossVal(DataFrame df,ParameterSet parameters){
 		setDataFrame(df);
-		executor.crossVal(10, 10, model.getModelName());
+		PredictionResultSet res = executor.crossVal(10, 10, model.getModelName());
+		FactPerformanceRegression fact=new FactPerformanceRegression(model,res,parameters);
+		return fact;
 	}
 
-	public FactPerformanceRegression fit(DataFrame df,ParameterSet parameters) {
+	public FactPerformanceRegressionStatistical fit(DataFrame df,ParameterSet parameters) {
+		
 		setDataFrame(df);
-		PredictionResultSet res= executor.fit(model.getModelName(), parameters);
+		PredictionResultSet res = executor.fit(model.getModelName(), parameters);
+		FactPerformanceRegressionStatistical fact=new FactPerformanceRegressionStatistical(model,res,parameters);
+		return fact;
 	}
 
-//weird coupling here!
-	
-	public FactPerformanceRegression predict(DataFrame df,ParameterSet parameters) {
-		setDataFrame(df);
-		PredictionResultSet res= executor.predict(model.getModelName(),parameters);
-	}
 	
 	public boolean returnsCoefs(){
 		ModelProperties[] properties=model.getModelProperties();
@@ -61,6 +60,5 @@ public class FactAnalysisRegression implements IFactAnalysisModel {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }
