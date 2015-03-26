@@ -16,7 +16,7 @@ import com.dataframe.DataFrame;
 * @author Stylianos Kampakis
 * @version 0.1 March 3, 2015.
 */
-public class analysisExecutor {
+public class AnalysisExecutor {
 	
 
 	
@@ -43,6 +43,7 @@ public class analysisExecutor {
 		
 	}
 	
+	
 	/**
 	 * Creates new providers, anything stored in the old ones is deleted.
 	 * 
@@ -50,6 +51,11 @@ public class analysisExecutor {
 	public void initialize(){
 		
 	}
+	
+	public void setDataFrame(DataFrame df){
+		this.df=df;
+	}
+	
 	
 	public PredictionResultSet crossVal(int numFolds,int numRepeats,Algorithms algorithm){
 		PredictionResultSet results=new PredictionResultSet();
@@ -63,7 +69,8 @@ public class analysisExecutor {
 		
 	}
 	
-	public PredictionResultSet fit(Algorithms algorithm){
+	
+	public PredictionResultSet fit(Algorithms algorithm,ParameterSet parameters){
 		PredictionResultSet results=new PredictionResultSet();
 		
 		switch(algorithm){
@@ -74,6 +81,21 @@ public class analysisExecutor {
 		return results;
 		
 	}
+
+	
+	public PredictionResultSet predict(Algorithms algorithm,ParameterSet parameters) {
+		PredictionResultSet results=new PredictionResultSet();
+		
+		switch(algorithm){
+		case LINEAR_REGRESSION:
+		
+		}
+		
+		return results;
+		
+	}
+
+
 
 	
 

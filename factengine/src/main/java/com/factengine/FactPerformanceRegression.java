@@ -1,6 +1,8 @@
 package com.factengine;
 
 import com.analysisInterface.Algorithms;
+import com.analysisInterface.PerformanceStatistics;
+import com.analysisInterface.PredictionResultSet;
 
 public class FactPerformanceRegression implements IFactPerformance {
 
@@ -11,7 +13,15 @@ public class FactPerformanceRegression implements IFactPerformance {
 	//concordance correlation coefficient
 	double ccc;
 	
+	PerformanceStatistics statistics=new PerformanceStatistics();
+	
 	FactModel model;
+	
+	FactPerformanceRegression(FactModel model,PredictionResultSet results){
+		setRMSE(statistics.RMSE(results));
+		setMAE(statistics.MAE(results));
+		setCcc(statistics.concordanceCorrelation(results));
+	}
 	
 	public Algorithms getModelName(){
 		return model.getModelName();
@@ -21,8 +31,8 @@ public class FactPerformanceRegression implements IFactPerformance {
 	public double getRMSE() {
 		return RMSE;
 	}
-	public void setRMSE(double rMSE) {
-		RMSE = rMSE;
+	public void setRMSE(double RMSE) {
+		RMSE = RMSE;
 	}
 	public double getMAE() {
 		return MAE;

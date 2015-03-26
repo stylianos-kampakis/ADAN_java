@@ -552,6 +552,8 @@ public class DataFrame {
 	 * @param columns
 	 */
 	private void rebuildColumnsMapHelper(Iterable<Integer> columns){
+	
+			//EDW EGINE H MLKIA!
 		HashMap<Integer, Column> dummyColumns = new HashMap<Integer, Column>();
 
 		for (Integer column : columns) {
@@ -1106,7 +1108,7 @@ public class DataFrame {
 	 * @throws DataFrameIndexException
 	 */
 	public HashMap<Integer, ArrayList<DataPoint>> getRows(
-			ArrayList<Integer> rows) throws DataFrameIndexException {
+			Iterable<Integer> rows) throws DataFrameIndexException {
 
 		HashMap<Integer, ArrayList<DataPoint>> rowsMap = new HashMap<Integer, ArrayList<DataPoint>>();
 
@@ -1116,6 +1118,8 @@ public class DataFrame {
 
 		return rowsMap;
 	}
+	
+
 
 	/**
 	 * 
@@ -1138,7 +1142,13 @@ public class DataFrame {
 		return getRows(list);
 	}
 
-
+	public HashMap<Integer,ArrayList<DataPoint>> getRows(int start, int end) throws DataFrameIndexException {
+		ArrayList<Integer> list=new ArrayList<Integer>();
+		for(int i=start;i<=end;i++){
+			list.add(i);
+		}
+		return getRows(list);		
+	}
 
 
 
