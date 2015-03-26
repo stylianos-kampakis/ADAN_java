@@ -1,4 +1,4 @@
-package com.sample
+package analyst;
  
 import java.util.ArrayList;
 import com.dataframe.DataFrame;
@@ -38,9 +38,10 @@ rule "choose columns to remove"
 salience 800
 	no-loop
 	when
-		$col: FactColumn(PercentageMissingValues>0.8);
+		$col: FactColumn(PercentageMissingValues>0.001);
 		$colCommander: ColumnRemovalCommander()
 	then
+		System.out.println("choose columns to remove");
 		$colCommander.addColumn($col.getColumn());
 end
 
@@ -53,6 +54,7 @@ salience 700
 		$df: DataFrame()
 		$colCommander: ColumnRemovalCommander()
 	then
+		System.out.println("removal of columns");
 		$colCommander.removeColumns($df);
 end
 
@@ -77,6 +79,8 @@ salience 500
 		$df: DataFrame()
 		$rowRemovalCommander : RowRemovalCommander()
 	then
+		System.out.println($df.getColumnsNumber());
+		System.out.println($df.getRows(1,15));
 	    System.out.println("i fired"); 
 	    $rowRemovalCommander.removeRows($df);	  	
 end

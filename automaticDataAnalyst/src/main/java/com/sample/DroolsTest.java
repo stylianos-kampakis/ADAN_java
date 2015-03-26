@@ -1,7 +1,5 @@
 package com.sample;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.kie.api.KieServices;
@@ -14,6 +12,7 @@ import com.dataframe.DataPoint;
 import com.dataframe.DataFrame.CheckIfMissing;
 import com.dataframe.DataFrame.CheckMissingCount;
 import com.datautils.DataUtils;
+import com.factengine.ColumnRemovalCommander;
 import com.factengine.Fact;
 import com.factengine.FactFactory;
 import com.factengine.FactRow;
@@ -31,7 +30,6 @@ public class DroolsTest {
 	        KieServices ks = KieServices.Factory.get();
     	    KieContainer kContainer = ks.getKieClasspathContainer();
         	KieSession kSession = kContainer.newKieSession("ksession-rules");
-
             
             String path="C:\\iris_missing.csv";
         	DataFrame df=new DataFrame();
@@ -41,6 +39,7 @@ public class DroolsTest {
         	List<FactRow> factsRows=factFactory.getMissingRowFacts(df);
         	ImputationCommander imputationCommander=new ImputationCommander(new DataUtils.meanImputor());
         	RowRemovalCommander rowCommander=new RowRemovalCommander();
+        	ColumnRemovalCommander columnCommander=new ColumnRemovalCommander();
         	
         	factFactory.factInsertor(kSession, factsRows);
     			
@@ -48,6 +47,7 @@ public class DroolsTest {
         	kSession.insert(df);
         	kSession.insert(imputationCommander);
         	kSession.insert(rowCommander);
+        	kSession.insert(columnCommander);
     		kSession.fireAllRules();
     		System.out.println(df.getRows(imputationCommander.getRows()));
     		System.out.println(df.getRows(1,15));

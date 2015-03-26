@@ -1,5 +1,9 @@
 package com.analysisInterface;
 
+import java.io.File;
+
+import com.dataframe.DataFrame;
+
 /**AnalysisExecutor
  * 
  * This class is the central commander for any kind of analysis. 
@@ -14,6 +18,10 @@ package com.analysisInterface;
 */
 public class analysisExecutor {
 	
+
+	
+	DataFrame df;
+		
 	//Predictive models and fit
 	ILinearRegression linearRegressionProvider;
 	IPoissonRegression poissonRegressionProvider;
@@ -30,6 +38,43 @@ public class analysisExecutor {
 	ISvm svmProvider;
 	IGaussianProcess gaussianProcessProvider;
 	INaiveBayes naivesBayesProvider;
+	
+	public void setConfigFile(File path){
+		
+	}
+	
+	/**
+	 * Creates new providers, anything stored in the old ones is deleted.
+	 * 
+	 */
+	public void initialize(){
+		
+	}
+	
+	public PredictionResultSet crossVal(int numFolds,int numRepeats,Algorithms algorithm){
+		PredictionResultSet results=new PredictionResultSet();
+		
+		switch(algorithm){
+		case LINEAR_REGRESSION:
+		
+		}
+		
+		return results;
+		
+	}
+	
+	public PredictionResultSet fit(Algorithms algorithm){
+		PredictionResultSet results=new PredictionResultSet();
+		
+		switch(algorithm){
+		case LINEAR_REGRESSION:
+		
+		}
+		
+		return results;
+		
+	}
+
 	
 
 }
