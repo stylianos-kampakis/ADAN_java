@@ -9,7 +9,7 @@ public class ColumnRemovalCommander extends ExecutionCommander {
 	private Set<Integer> columns=new HashSet<Integer>();
 
 	public Set<Integer> getColumns(){
-		return this.columns;
+		return columns;
 	}
 
 

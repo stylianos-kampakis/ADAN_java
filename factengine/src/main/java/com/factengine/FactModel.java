@@ -2,6 +2,8 @@ package com.factengine;
 
 import java.util.ArrayList;
 
+import com.analysisInterface.Algorithms;
+
 /**
  * FactModel is a class that is used as the parent for other classes that describe models about facts.
  * The FactModel contains two important characteristics regarding the description of a fact:
@@ -19,12 +21,24 @@ import java.util.ArrayList;
  */
 public class FactModel extends Fact {
 	
-	String modelName;
+	private Algorithms modelName;
 	ModelProperties[] modelProperties;
 
 	
-	public FactModel(String modelName, ModelProperties[] modelProperties){
-		this.modelName=modelName;
+	public FactModel(Algorithms name, ModelProperties[] modelProperties){
+		this.modelName=name;
 		this.modelProperties=modelProperties;
 	}
+	
+	
+	public ModelProperties[] getModelProperties(){
+		return modelProperties;
+	}
+	
+	
+	public Algorithms getModelName(){
+		return modelName;
+	}
+	
+	
 }

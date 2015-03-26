@@ -1,5 +1,7 @@
 package com.factengine;
 
+import com.analysisInterface.Algorithms;
+
 /**
  * Support Vector Machine facts.
  * 
@@ -8,9 +10,9 @@ package com.factengine;
  */
 public class SVMFactModel extends FactModel {
 	
-	public SVMFactModel(String modelName) {
+	public SVMFactModel() {
 		
-		super(modelName,new ModelProperties[]{ModelProperties.KERNEL_METHOD,
+		super(Algorithms.SVM,new ModelProperties[]{ModelProperties.KERNEL_METHOD,
 				//<REFERENCE>
 				ModelProperties.POOR_SCALABILITY,
 				ModelProperties.POOR_MISSING_VALUES,
