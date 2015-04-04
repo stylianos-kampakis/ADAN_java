@@ -10,6 +10,7 @@ public class Column {
 	protected Set<String> factors;
 	protected DataPointType type;
 	protected DataPointSubType subtype=DataPointSubType.NONE;
+	
 	String name;
 	
 	public Column(String name){

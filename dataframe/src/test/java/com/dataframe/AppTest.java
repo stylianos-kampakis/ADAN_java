@@ -209,4 +209,33 @@ public class AppTest
 			e.printStackTrace();
 		}
     }
+    
+    @Test
+    public void containsMissingValues(){
+    	
+			try {
+				Assert.assertTrue(df_missing.checkContainsMissingValues());
+			} catch (DataFrameIndexException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				Assert.assertFalse(df.checkContainsMissingValues());
+			} catch (DataFrameIndexException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+    }
+    
+    @Test
+    public void testColumnsType(){
+			Assert.assertTrue(df.checkContainsColumnsType(DataPointType.STRING));
+			Assert.assertTrue(df.checkContainsColumnsType(DataPointType.DOUBLE));		
+			Assert.assertFalse(df.checkContainsColumnsType(DataPointType.NA));
+			Assert.assertTrue(df.numColumnsType(DataPointType.STRING)==2);
+    }
+    
+
+    
 }

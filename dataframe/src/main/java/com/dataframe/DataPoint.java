@@ -31,7 +31,7 @@ public class DataPoint implements Serializable {
 	private Object point;
 	private DataPointType type;
 	private DataPointSubType subtype=DataPointSubType.NONE;
-	List<String> missingValues=Arrays.asList("NA","N/A","N\\A","na","n\\a","n/a","?");
+	private List<String> missingValues=Arrays.asList("NA","N/A","N\\A","na","n\\a","n/a","?");
 
 
 	/**public DataPoint(String item)

@@ -216,6 +216,14 @@ public static double getMeans(int column, DataFrame df){
 	list.add(column);
 	return getMeans(list,df).get(column).doubleValue();
 }
+
+public static void normalize(DataFrame df){
+	
+}
+
+public static void standardize(DataFrame df){
+	
+}
 	
 	
 	//this is a 'delegate' for imputing missing values using the mean of a column

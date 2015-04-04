@@ -24,6 +24,12 @@ public class App
 	String path="C:\\iris_missing.csv";
     	DataFrame df=new DataFrame();
     	df.readCSV(path);
+    	try {
+			df.checkContainsMissingValues();
+		} catch (DataFrameIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     
   
     	

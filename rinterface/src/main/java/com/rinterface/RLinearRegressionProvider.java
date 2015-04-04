@@ -2,8 +2,9 @@ package com.rinterface;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.analysisInterface.ILinearRegression;
-import com.analysisInterface.PredictionResultSet;
+import com.analysisInterface.parameters.ParameterSet;
+import com.analysisInterface.providers.ILinearRegression;
+import com.analysisInterface.results.PredictionResultSet;
 import com.dataframe.DataFrame;
 
 import rcaller.RCaller;
@@ -298,6 +299,26 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			else{
 				throw new IllegalStateException("There must a model that has been fit first.");
 			}
+	}
+
+	//These three methods are 'inactive'. They have to be implemented because of inheritance,
+	//but they don't carry any meaning for linear regression, unless a regularizer would be
+	//to be used (which is not used in this provider).
+	public String fit(String response, DataFrame df, ParameterSet parameters) {
+
+		return fit(response,df,parameters);
+	}
+
+	public String fit(String response, DataFrame df, String[] covariates,
+			ParameterSet parameters) {
+		
+		return fit(response,df,covariates);
+	}
+
+	public double[] predict(DataFrame df, ParameterSet parameters) {
+		
+		return predict(df);
+		
 	}
 
 

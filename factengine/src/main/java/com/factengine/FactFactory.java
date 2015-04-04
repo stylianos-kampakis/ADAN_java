@@ -5,8 +5,16 @@ import java.util.List;
 
 import org.kie.api.runtime.KieSession;
 
+import com.analysisInterface.parameters.ParameterSet;
+import com.analysisInterface.results.PredictionResultSet;
 import com.dataframe.DataFrame;
 import com.dataframe.DataFrameIndexException;
+import com.factengine.datasetdescriptors.FactColumn;
+import com.factengine.datasetdescriptors.FactDataFrame;
+import com.factengine.datasetdescriptors.FactRow;
+import com.factengine.descriptionenums.DatasetDescriptionTags;
+import com.factengine.factmodels.FactModel;
+import com.factengine.performancedescriptors.FactPerformanceRegression;
 
 /**
  * The FactFactory class contains methods that get 
@@ -32,9 +40,9 @@ public class FactFactory {
 		ArrayList<FactRow> factRow=new ArrayList<FactRow>();
 		FactRow fact;
 		
-		for(int i=1;i<=df.getRowsNumber();i++){
+		for(int i=1;i<=df.getNumberRows();i++){
 			//The fact row is constructed taking the row number as the argument
-			fact=new FactRow(i,df.getColumnsNumber());
+			fact=new FactRow(i,df.getNumberColumns());
 			try {
 				fact.setNumberMissingValues(df.getNumMissingValuesForRow(i));
 				factRow.add(fact);
@@ -52,9 +60,9 @@ public class FactFactory {
 		ArrayList<FactColumn> factColumn=new ArrayList<FactColumn>();
 		FactColumn fact;
 		
-		for(int i=1;i<=df.getColumnsNumber();i++){
+		for(int i=1;i<=df.getNumberColumns();i++){
 			//The fact row is constructed taking the row number as the argument
-			fact=new FactColumn(i,df.getRowsNumber());
+			fact=new FactColumn(i,df.getNumberRows());
 			try {
 				fact.setNumberMissingValues(df.getNumMissingValuesForColumn(i));
 				factColumn.add(fact);
@@ -79,6 +87,34 @@ public class FactFactory {
 			kSession.insert(fact);
 		}
 	}
+	
+	/**
+	 * 
+	 * This functions is used after a model has been executed in a KieSession in order to convert
+	 * the results of the model to a FactPerformanceRegressionModel.
+	 * 
+	 * @param model
+	 * @param results
+	 * @param parameters
+	 * @return
+	 */
+	public FactPerformanceRegression createRegressionFacts(FactModel model,PredictionResultSet results, ParameterSet parameters){
+		return new FactPerformanceRegression(model,results,parameters);
+	}
+
+/*	public FactDataFrame getDataFrameFacts(DataFrame df) {
+
+		FactDataFrame fact;
+		ArrayList<DatasetDescriptionTags> tags=new ArrayList<DatasetDescriptionTags>();
+		
+		if(df.getRowsNumber()<df.getColumnsNumber()){
+			tags.add(DatasetDescriptionTags.)
+		}
+		
+		return null;
+	}*/
+	
+	
 
 	
 }

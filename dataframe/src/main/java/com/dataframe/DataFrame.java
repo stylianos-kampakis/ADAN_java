@@ -173,9 +173,16 @@ public class DataFrame {
 	 * 
 	 * Returns the total number of rows.
 	 */
-	public int getRowsNumber() {
-
-		return df.size() / Columns.size();
+	@SuppressWarnings("finally")
+	public int getNumberRows() {
+		int dummy=0;
+		try{
+			dummy=df.size() / Columns.size();
+		}
+		finally
+		{
+			return dummy;
+		}
 	}
 
 	/**
@@ -183,7 +190,7 @@ public class DataFrame {
 	 * 
 	 * Returns the total number of columns.
 	 */
-	public int getColumnsNumber() {
+	public int getNumberColumns() {
 
 		return Columns.size();
 	}
@@ -200,7 +207,7 @@ public class DataFrame {
 	public ArrayList<DataPoint> getColumn(int column)
 			throws DataFrameIndexException {
 
-		if (column > this.getColumnsNumber() || column < 1) {
+		if (column > this.getNumberColumns() || column < 1) {
 			throw new DataFrameIndexException("Column index does not exist.");
 		}
 
@@ -214,38 +221,7 @@ public class DataFrame {
 
 		return result;
 	}
-
-	/**
-	 * 
-	 * Iterator class for iterating over a single column.
-	 * 
-	 * @author stelios
-	 *
-	 */
-	private class IterateColumn implements Iterator<DataPoint> {
-
-		IndexKey key;
-
-		public IterateColumn(int column) {
-			this.key = new IndexKey(0, column);
-
-		}
-
-		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			return key.getRow() < getRowsNumber();
-		}
-
-		public DataPoint next() {
-			if (hasNext()) {
-				key.setRow(key.getRow() + 1);
-				return df.get(key);
-			}
-			return null;
-		}
-
-	}
-
+	
 	/**
 	 * public ArrayList<DataPoint> getColumn(string columnName)
 	 * 
@@ -275,7 +251,43 @@ public class DataFrame {
 			throw new DataFrameIndexException("Column not found.");
 		}
 	}
+	
 
+	
+
+
+	/**
+	 * 
+	 * Iterator class for iterating over a single column.
+	 * 
+	 * @author stelios
+	 *
+	 */
+	private class IterateColumn implements Iterator<DataPoint> {
+
+		IndexKey key;
+
+		public IterateColumn(int column) {
+			this.key = new IndexKey(0, column);
+
+		}
+
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+			return key.getRow() < getNumberRows();
+		}
+
+		public DataPoint next() {
+			if (hasNext()) {
+				key.setRow(key.getRow() + 1);
+				return df.get(key);
+			}
+			return null;
+		}
+
+	}
+
+	
 	/**
 	 * public ArrayList<DataPoint> getRow(int row)
 	 * 
@@ -287,7 +299,7 @@ public class DataFrame {
 	 */
 	public ArrayList<DataPoint> getRow(int row) throws DataFrameIndexException {
 
-		if (row > this.getRowsNumber() || row < 1) {
+		if (row > this.getNumberRows() || row < 1) {
 			throw new DataFrameIndexException("Invalid row index.");
 		}
 
@@ -320,7 +332,7 @@ public class DataFrame {
 
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
-			return key.getColumn() < getColumnsNumber();
+			return key.getColumn() < getNumberColumns();
 		}
 
 		public DataPoint next() {
@@ -451,6 +463,10 @@ public class DataFrame {
 		dummy = dummy.replaceFirst(",", "");
 		return dummy;
 	}
+	
+	public DataPointType getColumnType(int column){
+		return Columns.get(column).getType();
+	}
 
 	// public HashMap<Integer,<>> GetTypesAsHashMap(){
 
@@ -470,7 +486,7 @@ public class DataFrame {
 	 */
 	protected void dropColumnHelper(int column) {
 		IndexKey key = new IndexKey(1, column);
-		int rowsNumber = this.getRowsNumber();
+		int rowsNumber = this.getNumberRows();
 
 		for (int i = 2; i <= rowsNumber + 1; i++) {
 			this.df.remove(key);
@@ -500,16 +516,21 @@ public class DataFrame {
 	}
 	
 
-
+	/**
+	 * Drops one or more columns and then rebuilds the index.
+	 * @param columns
+	 */
 	public void dropColumns(Set<Integer> columns) {
 		
+		if(columns.size()>0){
 		
-		for (Integer col : columns) {
-			dropColumnHelper(col);
-
+			for (Integer col : columns) {
+				dropColumnHelper(col);
+	
+			}
+			rebuildIndexColumn();
+			rebuildColumnsMap(columns);
 		}
-		rebuildIndexColumn();
-		rebuildColumnsMap(columns);
 		
 	}
 
@@ -539,6 +560,8 @@ public class DataFrame {
 	
 	
 	/**
+	 * Rebuilds the columns hashmap (which assigns an integer key to each column name)
+	 * be calling the relevant helper method.
 	 * 
 	 * @param columns
 	 */
@@ -548,12 +571,15 @@ public class DataFrame {
 
 	
 	/**
+	 * This function rebuilds the columns hashmap that assigns a unique key to each column name.
+	 * It assumes that the 'columns' input parameter is non-empty.
+	 * 
 	 * 
 	 * @param columns
 	 */
 	private void rebuildColumnsMapHelper(Iterable<Integer> columns){
 	
-			//EDW EGINE H MLKIA!
+		
 		HashMap<Integer, Column> dummyColumns = new HashMap<Integer, Column>();
 
 		for (Integer column : columns) {
@@ -579,7 +605,7 @@ public class DataFrame {
 	 */
 	protected void dropRowHelper(int row) {
 		IndexKey key = new IndexKey(row, 1);
-		int columnsNumber = getColumnsNumber();
+		int columnsNumber = getNumberColumns();
 
 		for (int i = 2; i <= columnsNumber + 1; i++) {
 			df.remove(key);
@@ -651,7 +677,7 @@ public class DataFrame {
 		Set<IndexKey> keys = df.keySet();
 		ArrayList<IndexKey> list = new ArrayList<IndexKey>(keys);
 
-		int rowsNumber = this.getRowsNumber();
+		int rowsNumber = this.getNumberRows();
 
 		// This code adds a column at each row, with the value 0. This is used
 		// as a dummy
@@ -707,7 +733,7 @@ public class DataFrame {
 	 */
 	private void rebuildIndexRow() {
 		// first we createa a list with all the index keys
-		int columnsNumber = getColumnsNumber();
+		int columnsNumber = getNumberColumns();
 
 		Set<IndexKey> keys = df.keySet();
 		ArrayList<IndexKey> list = new ArrayList<IndexKey>(keys);
@@ -774,7 +800,7 @@ public class DataFrame {
 	public void setRow(int rowIndex, ArrayList<DataPoint> row) {
 		IndexKey key = new IndexKey(rowIndex, 0);
 
-		for (int i = 1; i <= getColumnsNumber(); i++) {
+		for (int i = 1; i <= getNumberColumns(); i++) {
 			key.setColumn(i);
 			df.replace(key, row.get(i - 1));
 		}
@@ -878,7 +904,7 @@ public class DataFrame {
 	public String toString() {
 
 		String dummy = "";
-		for (int i = 1; i <= this.getRowsNumber(); i++) {
+		for (int i = 1; i <= this.getNumberRows(); i++) {
 			try {
 				dummy = dummy + "\n " + i + ": " + this.getRow(i);
 
@@ -959,6 +985,17 @@ public class DataFrame {
 			throws DataFrameIndexException {
 		return check.countConditionToCheck(this.getColumn(column));
 	}
+	
+	public int applyCountLogicalToAll(ICountLogicalCheck check)
+			throws DataFrameIndexException {
+		return check.countConditionToCheck(new ArrayList<DataPoint>(df.values()));
+	}
+	
+	public boolean applyLogicalToAll(ILogicalCheck check)
+			throws DataFrameIndexException {
+		return check.conditionToCheck(new ArrayList<DataPoint>(df.values()));
+	}
+
 
 	/**
 	 * ArrayList<Integer> getRowsWithMissingValuesAboveThreshold(int threshold)
@@ -974,13 +1011,12 @@ public class DataFrame {
 			int threshold) {
 		ArrayList<Integer> rows = new ArrayList<Integer>();
 
-		for (int i = 1; i < getRowsNumber() + 1; i++) {
+		for (int i = 1; i < getNumberRows() + 1; i++) {
 			try {
 				if (applyCountLogicalToRow(new DataFrame.CheckMissingCount(), i) > threshold) {
 					rows.add(i);
 				}
 			} catch (DataFrameIndexException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -1011,6 +1047,28 @@ public class DataFrame {
 	}
 
 
+	public boolean checkContainsMissingValues() throws DataFrameIndexException{
+		return applyLogicalToAll(new DataFrame.CheckIfMissing());
+	}
+	
+	public boolean checkContainsColumnsType(DataPointType type){
+		for(int i=1;i<=getNumberColumns();i++){
+			if(Columns.get(i).getType()==type){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int numColumnsType(DataPointType type){
+		int counter=0;
+		for(int i=1;i<=getNumberColumns();i++){
+			if(Columns.get(i).getType()==type){
+				counter++;
+			}
+		}
+		return counter;
+	}
 
 	// Helper class, used to compare IndexKeys by row. It is used when
 	// rebuilding the index.
@@ -1036,6 +1094,7 @@ public class DataFrame {
 			return 0;
 		}
 	}
+	
 
 	/**
 	 * public static class CheckIfMissing
@@ -1065,7 +1124,7 @@ public class DataFrame {
 	 * It is a 'delegate' with only one method, accepting an ArrayList of DataPoints (row or column)
 	 *
 	 */
-	public class CheckMissingCount implements ICountLogicalCheck {
+	public static class CheckMissingCount implements ICountLogicalCheck {
 
 		public int countConditionToCheck(ArrayList<DataPoint> list) {
 			int occurences = 0;
