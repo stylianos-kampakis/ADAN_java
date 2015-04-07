@@ -8,8 +8,8 @@ public interface IModel {
 	//assumes that all the covariates will be used
 	//If the interface is R then we can define interactions, such as covariates={"variable1*variable2"}
 	//The functions should return some representation of the object in String format (such as XML)
-	public String fit(String response,DataFrame df,ParameterSet parameters);
-	public String fit(String response,DataFrame df,String[] covariates,ParameterSet parameters);
+	public void fit(String response,DataFrame df,ParameterSet parameters);
+	public void fit(String response,DataFrame df,String[] covariates,ParameterSet parameters);
 	
 //Predict assumes that the names of the response and the covariates remain the same.
 //Additional flexibility (allowing for other names for responses or covariates) should NOT
