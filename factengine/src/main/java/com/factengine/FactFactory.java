@@ -102,17 +102,8 @@ public class FactFactory {
 		return new FactPerformanceRegression(model,results,parameters);
 	}
 
-/*	public FactDataFrame getDataFrameFacts(DataFrame df) {
 
-		FactDataFrame fact;
-		ArrayList<DatasetDescriptionTags> tags=new ArrayList<DatasetDescriptionTags>();
-		
-		if(df.getRowsNumber()<df.getColumnsNumber()){
-			tags.add(DatasetDescriptionTags.)
-		}
-		
-		return null;
-	}*/
+
 	
 	
 
