@@ -30,7 +30,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * It assumes that all the variables, besides the response, are covariates.
 	 * 
 	 */
-	public String fit(String response, DataFrame df) {
+	public void fit(String response, DataFrame df) {
 		initialize();
 		
 		String dfR=df.getRDataFrame();
@@ -45,16 +45,14 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		caller.setRCode(code);
 		caller.runAndReturnResultOnline("lm1");
 		try {
-			String result = caller.getParser().getXMLFileAsString();	
+			caller.getParser().getXMLFileAsString();	
 			modelExists=true;
-			return result;
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		return null;		
+				
 	}
 
 	/**
@@ -62,7 +60,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * The user needs to specify the names of the covariates in the 'Covariates' argument.
 	 * 
 	 */
-	public String fit(String response, DataFrame df, String[] covariates) {
+	public void fit(String response, DataFrame df, String[] covariates) {
 		initialize();
 		
 		String dfR=df.getRDataFrame();
@@ -86,17 +84,39 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		caller.runAndReturnResultOnline("lm1");
 		
 		try {
-			String result = caller.getParser().getXMLFileAsString();
+			caller.getParser().getXMLFileAsString();
 			modelExists=true;
-			return result;
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 		
 	}
 
+	
+	//These methods are 'inactive'. They have to be implemented because of inheritance from IModel,
+	//but they don't carry any meaning for linear regression, unless a regularizer would be
+	//to be used (which is not used in this provider).
+
+	public double[] predict(DataFrame df, ParameterSet parameters) {
+		
+		return predict(df);
+		
+	}
+
+	public void fit(String response, DataFrame df, ParameterSet parameters) {
+		this.fit(response, df);
+		
+	}
+
+	public void fit(String response, DataFrame df, String[] covariates,
+			ParameterSet parameters) {
+		this.fit(response,df, covariates);
+		
+	}
+	
+	
 	/**
 	 * Makes predictions for a new dataset. The model should have been fit first to a dataset, otherwise
 	 * the function will not run.
@@ -104,7 +124,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double[] predict(DataFrame df) throws IllegalStateException {
-		if(modelExists=true){
+		if(modelExists){
 		String dfR=df.getRDataFrame();
 		
 		String template="results=predict(lm1,data="+dfR.replace("DataFrame=", "")+")";
@@ -126,7 +146,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * Gets the fitted values from the last fit of the model to a dataset.
 	 */
 	public double[] getFitted() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=fitted(lm1)";
 			code.clear();
 			code.addRCode(template);
@@ -146,7 +166,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double getAIC() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=AIC(lm1)";
 			code.clear();
 			code.addRCode(template);
@@ -166,7 +186,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double getBIC() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=BIC(lm1)";
 			code.clear();
 			code.addRCode(template);
@@ -188,7 +208,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double getLogLikelihood() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=summary(logLik(lm1))[[1]]";
 			code.clear();
 			code.addRCode(template);
@@ -210,7 +230,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public HashMap<String,Double> getCoefficients() {
-		if(modelExists=true){
+		if(modelExists){
 			
 			HashMap<String,Double> results=new HashMap<String,Double>();
 			
@@ -240,7 +260,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double rSquared() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=summary(lm1)$r.squared";
 			code.clear();
 			code.addRCode(template);
@@ -260,7 +280,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double adjustedRSquared() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=summary(lm1)$adj.r.squared";
 			code.clear();
 			code.addRCode(template);
@@ -280,7 +300,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * 
 	 */
 	public double getPvalueCoefficients() {
-		if(modelExists=true){
+		if(modelExists){
 			String template="results=summary(lm1)$coefficients[,4]";
 			code.clear();
 			code.addRCode(template);
@@ -301,25 +321,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 
-	//These three methods are 'inactive'. They have to be implemented because of inheritance,
-	//but they don't carry any meaning for linear regression, unless a regularizer would be
-	//to be used (which is not used in this provider).
-	public String fit(String response, DataFrame df, ParameterSet parameters) {
 
-		return fit(response,df,parameters);
-	}
-
-	public String fit(String response, DataFrame df, String[] covariates,
-			ParameterSet parameters) {
-		
-		return fit(response,df,covariates);
-	}
-
-	public double[] predict(DataFrame df, ParameterSet parameters) {
-		
-		return predict(df);
-		
-	}
 
 
 

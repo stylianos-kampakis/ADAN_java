@@ -25,7 +25,7 @@ OutputStream rInput;
     				df.readCSV(path);
     				System.out.println(df.toString());
 
-    				String result =rinter.fit("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
+    				rinter.fit("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
     				double res=rinter.getLogLikelihood();
     				rinter.getPvalueCoefficients();
     		
