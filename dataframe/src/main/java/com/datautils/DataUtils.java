@@ -217,11 +217,22 @@ public static double getMeans(int column, DataFrame df){
 	return getMeans(list,df).get(column).doubleValue();
 }
 
-public static void normalize(DataFrame df){
+public static TransformSettings normalize(DataFrame df){
+	return null;
 	
 }
 
-public static void standardize(DataFrame df){
+public static TransformSettings standardize(DataFrame df){
+	return null;
+	
+}
+
+/**
+ * Undoes a transformation applied to a dataframe.
+ * @param df
+ * @param settings
+ */
+public static void detransform(DataFrame df,TransformSettings settings){
 	
 }
 	
@@ -251,6 +262,9 @@ public static class meanImputor implements IImputor{
 
 		return getMeans(missing,df);
 	}
+	
+	 
+	
 }
 
 public static class medianImputor implements IImputor{
