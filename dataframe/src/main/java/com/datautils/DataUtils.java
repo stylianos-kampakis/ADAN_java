@@ -236,6 +236,15 @@ public static void detransform(DataFrame df,TransformSettings settings){
 	
 }
 	
+public static void makeNormal(DataFrame df,String column){
+	
+}
+
+public static boolean checkNormal(DataFrame df,String column){
+	
+	return true;
+	
+}
 	
 	//this is a 'delegate' for imputing missing values using the mean of a column
 public static class meanImputor implements IImputor{		
