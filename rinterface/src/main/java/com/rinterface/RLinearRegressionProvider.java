@@ -6,6 +6,7 @@ import com.analysisInterface.parameters.ParameterSet;
 import com.analysisInterface.providers.ILinearRegression;
 import com.analysisInterface.results.PredictionResultSet;
 import com.dataframe.DataFrame;
+import com.factengine.Response;
 
 import rcaller.RCaller;
 import rcaller.RCode;
@@ -30,7 +31,8 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * It assumes that all the variables, besides the response, are covariates.
 	 * 
 	 */
-	public void fit(String response, DataFrame df) {
+	public void fit(Response res, DataFrame df) {
+		String response=res.getResponse();
 		initialize();
 		
 		String dfR=df.getRDataFrame();
@@ -60,9 +62,10 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * The user needs to specify the names of the covariates in the 'Covariates' argument.
 	 * 
 	 */
-	public void fit(String response, DataFrame df, String[] covariates) {
+	public void fit(Response res, DataFrame df, String[] covariates) {
 		initialize();
 		
+		String response=res.getResponse();
 		String dfR=df.getRDataFrame();
 		
 		String template="lm1=lm(<RESPONSE>~";
@@ -105,12 +108,12 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 		
 	}
 
-	public void fit(String response, DataFrame df, ParameterSet parameters) {
+	public void fit(Response response, DataFrame df, ParameterSet parameters) {
 		this.fit(response, df);
 		
 	}
 
-	public void fit(String response, DataFrame df, String[] covariates,
+	public void fit(Response response, DataFrame df, String[] covariates,
 			ParameterSet parameters) {
 		this.fit(response,df, covariates);
 		
@@ -319,6 +322,10 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			else{
 				throw new IllegalStateException("There must a model that has been fit first.");
 			}
+	}
+
+	public boolean modelExists() {
+		return modelExists;
 	}
 
 

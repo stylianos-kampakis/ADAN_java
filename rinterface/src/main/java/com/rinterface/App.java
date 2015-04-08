@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 
 import com.dataframe.DataFrame;
+import com.factengine.Response;
 
 import rcaller.RCaller;
 import rcaller.RCode;
@@ -25,7 +26,8 @@ OutputStream rInput;
     				df.readCSV(path);
     				System.out.println(df.toString());
 
-    				rinter.fit("Sepal.Length", df,new String[]{"Petal.Length","Sepal.Width"});
+    				rinter.fit(new Response("Sepal.Length"), df,new String[]{"Petal.Length","Sepal.Width"});
+    				HashMap<String,Double> coefs=rinter.getCoefficients();
     				double res=rinter.getLogLikelihood();
     				rinter.getPvalueCoefficients();
     		
