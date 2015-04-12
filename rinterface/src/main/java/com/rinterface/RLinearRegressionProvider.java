@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.analysisInterface.parameters.ParameterSet;
-import com.analysisInterface.providers.ILinearRegression;
+import com.analysisInterface.providers.supervised.ILinearRegression;
 import com.analysisInterface.results.PredictionResultSet;
 import com.dataframe.DataFrame;
 import com.factengine.Response;
