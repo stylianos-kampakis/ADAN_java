@@ -1,4 +1,4 @@
-package com.analysisInterface.providers;
+package com.analysisInterface.providers.supervised;
 
 import com.analysisInterface.parameters.ParameterSet;
 import com.dataframe.DataFrame;
