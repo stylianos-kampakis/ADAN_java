@@ -29,7 +29,7 @@ import java.util.Set;
  * @author Stylianos Kampakis
  * @version 0.1 March 3, 2015.
  */
-public class DataFrame {
+public class DataFrame implements Serializable {
 
 	/*
 	 * DataPointType and DataPointSubType are used for column and datapoint
@@ -1194,6 +1194,43 @@ public class DataFrame {
 		return true;
 	}
 
+	public DataFrame clone(){
+		ObjectOutputStream oos = null;
+	      ObjectInputStream ois = null;
+	      
+	         ByteArrayOutputStream bos = 
+	               new ByteArrayOutputStream(); // A
+	         try {
+				oos = new ObjectOutputStream(bos);
+				 oos.writeObject(this);   // C
+		         oos.flush();               // D
+		         ByteArrayInputStream bin = 
+		               new ByteArrayInputStream(bos.toByteArray()); // E
+		         ois = new ObjectInputStream(bin);                  // F
+		         // return the new object
+		         
+					return (DataFrame) ois.readObject();
+				 
+			} catch (Exception e) {
+		
+				e.printStackTrace();
+			} 
+	         finally
+	         {
+	            try {
+					oos.close();
+		            ois.close();
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	         }
+	     	     
+		return null;
+	}
+	
+	@Override
 	public String toString() {
 
 		String dummy = "";

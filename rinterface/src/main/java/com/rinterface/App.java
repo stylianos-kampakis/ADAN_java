@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import com.analysisInterface.results.Coefficients;
 import com.dataframe.DataFrame;
 import com.factengine.Response;
 
@@ -27,9 +28,9 @@ OutputStream rInput;
     				System.out.println(df.toString());
 
     				rinter.fit(new Response("Sepal.Length"), df,new String[]{"Petal.Length","Sepal.Width"});
-    				HashMap<String,Double> coefs=rinter.getCoefficients();
+    				Coefficients coefs=rinter.getCoefficients();
     				double res=rinter.getLogLikelihood();
-    				rinter.getPvalueCoefficients();
+    				
     		
     			} catch (IOException e) {
     				// TODO Auto-generated catch block

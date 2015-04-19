@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import com.analysisInterface.parameters.ParameterSet;
 import com.analysisInterface.providers.supervised.ILinearRegression;
+import com.analysisInterface.results.Coefficients;
 import com.analysisInterface.results.PredictionResultSet;
 import com.dataframe.DataFrame;
 import com.factengine.Response;
@@ -232,7 +233,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 	 * Gets the coefficients from the last fit of the model.
 	 * 
 	 */
-	public HashMap<String,Double> getCoefficients() {
+	public Coefficients getCoefficients() {
 		if(modelExists){
 			
 			HashMap<String,Double> results=new HashMap<String,Double>();
@@ -251,7 +252,22 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 				results.put(names[i], coefs[i]);
 			}
 			
-			return results;
+			HashMap<String,Double> pvalues=new HashMap<String,Double>();
+			
+			template="results=summary(lm1)$coefficients[,4]";
+			code.clear();
+			code.addRCode(template);
+			caller.setRCode(code);
+			caller.runAndReturnResultOnline("results");
+			
+			
+			double[] values=caller.getParser().getAsDoubleArray("results");
+			
+			for(int i=0;i<names.length;i++){
+				pvalues.put(names[i], values[i]);
+			}
+			
+			return new Coefficients(results,pvalues);
 			}
 			else{
 				throw new IllegalStateException("There must a model that has been fit first.");
@@ -298,31 +314,7 @@ public class RLinearRegressionProvider extends RProviderBase implements ILinearR
 			}
 	}
 	
-	/**
-	 * Gets the p-values of the coefficients.
-	 * 
-	 */
-	public double getPvalueCoefficients() {
-		if(modelExists){
-			String template="results=summary(lm1)$coefficients[,4]";
-			code.clear();
-			code.addRCode(template);
-			caller.setRCode(code);
-			caller.runAndReturnResultOnline("results");
-			try {
-				System.out.println(caller.getParser().getXMLFileAsString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			double[] results=caller.getParser().getAsDoubleArray("results");
-			
-			return results[0];
-			}
-			else{
-				throw new IllegalStateException("There must a model that has been fit first.");
-			}
-	}
+
 
 	public boolean modelExists() {
 		return modelExists;

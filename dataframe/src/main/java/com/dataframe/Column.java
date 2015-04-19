@@ -1,12 +1,13 @@
 package com.dataframe;
 
 
+import java.io.Serializable;
 import java.util.Set;
 
 import com.dataframe.DataPointSubType;
 
 
-public class Column {
+public class Column implements Serializable {
 	protected Set<String> factors;
 	protected DataPointType type;
 	protected DataPointSubType subtype=DataPointSubType.NONE;

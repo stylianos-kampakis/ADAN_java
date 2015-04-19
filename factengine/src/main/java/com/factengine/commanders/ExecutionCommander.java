@@ -1,5 +1,10 @@
 package com.factengine.commanders;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.analyst.RulesExecutor;
+
 /**
  * ExecutionCommander is a parent class that other commanders inherit from.
  * The Commander classes are used in order to facilitate the interaction of the kieSession with the
@@ -13,4 +18,17 @@ package com.factengine.commanders;
  */
 public class ExecutionCommander {
 
+	private Set<RulesExecutor> models=new HashSet<RulesExecutor>();
+	
+	
+	public void addModel(RulesExecutor executor){
+		models.add(executor);
+	}
+	
+	public Set<RulesExecutor> getModels(){
+		return(models);
+	}
+	
+	
 }
+

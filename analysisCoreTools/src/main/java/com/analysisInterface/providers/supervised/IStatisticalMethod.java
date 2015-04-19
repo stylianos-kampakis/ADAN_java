@@ -2,6 +2,8 @@ package com.analysisInterface.providers.supervised;
 
 import java.util.HashMap;
 
+import com.analysisInterface.results.Coefficients;
+
 public interface IStatisticalMethod {
 	
 	public double getAIC();
@@ -10,6 +12,6 @@ public interface IStatisticalMethod {
 	
 	public double getLogLikelihood();
 	
-	public HashMap<String,Double> getCoefficients();
+	public Coefficients getCoefficients();
 
 }

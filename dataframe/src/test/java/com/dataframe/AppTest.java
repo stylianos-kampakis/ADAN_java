@@ -236,6 +236,17 @@ public class AppTest
 			Assert.assertTrue(df.numColumnsType(DataPointType.STRING)==2);
     }
     
-
+    //test that the largest column index is 6
+    @Test
+    public void testDeepCopy() throws DataFrameIndexException
+    {	
+		
+    	DataFrame newdf=df.clone();
+    	
+    	newdf.dropRows(new int[] {1,2,3});
+    	Assert.assertFalse(newdf.getRow(1).toString().equals(df.getRow(1)));
+    	
+    	
+    }
     
 }

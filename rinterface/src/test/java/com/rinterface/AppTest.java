@@ -53,7 +53,7 @@ public class AppTest
     public void testLinearRegressionAllCovariates()
     {
 		rinter.fit(new Response("Sepal.Length"), df);
-		HashMap<String,Double> coefs=rinter.getCoefficients();
+		HashMap<String,Double> coefs=rinter.getCoefficients().getCoefficients();
 		System.out.println(coefs.toString());
 	
 	//we are using only a single coefficient int the assertion because the result string is
@@ -64,7 +64,7 @@ public class AppTest
     @Test
     public void testChooseCovariatesLinearRegression(){
     	rinter.fit(new Response("Sepal.Length"), df,new String[]{"Petal.Length"});
-    	HashMap<String,Double> coefs=rinter.getCoefficients();
+    	HashMap<String,Double> coefs=rinter.getCoefficients().getCoefficients();
     	//we are using only a single coefficient int the assertion because the result string is
     	//too long.
     Assert.assertTrue(coefs.get("Petal.Length")==0.408922277351185);
