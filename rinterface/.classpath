@@ -24,9 +24,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="src" path="/factengine"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/RCaller"/>
 	<classpathentry kind="src" path="/dataframe"/>
 	<classpathentry kind="src" path="/analysisCoreTools"/>
+	<classpathentry kind="src" path="/factengine"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

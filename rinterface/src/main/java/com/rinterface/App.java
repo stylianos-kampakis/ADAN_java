@@ -1,15 +1,10 @@
 package com.rinterface;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
 
 import com.analysisInterface.results.Coefficients;
 import com.dataframe.DataFrame;
 import com.factengine.Response;
-
-import rcaller.RCaller;
-import rcaller.RCode;
 /**
  * Hello world!
  *
