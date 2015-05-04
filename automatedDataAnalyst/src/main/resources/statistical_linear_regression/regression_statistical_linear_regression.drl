@@ -1,0 +1,75 @@
+//created on: Apr 4, 2015
+package analysis
+import com.datautils.*;
+import com.factengine.*;
+import com.factengine.performancedescriptors.*;
+import com.analyst.*;
+import com.dataframe.*;
+import com.analysisInterface.providers.*;
+import com.analysisInterface.providers.supervised.*;
+import com.analysisInterface.providers.unsupervised.*;
+import com.analysisInterface.results.*;
+import java.util.*;
+
+//list any import classes here.
+
+
+
+//declare any global variables here
+
+
+
+
+rule "When not normal, then make response normal"
+salience 1000
+    when
+    	$response : Response()
+        $list : Results()
+        $df : DataFrame()
+    then
+        $data: $df.getColumn($response.getResponse());    
+        //dataUtils should return a result statement here
+        //DataUtils.makeNormal($df, $response.getResponse());
+		$list.add(new ResultStatement("Response was converted to normal","normal response"));
+end
+
+
+rule "Run the model"
+salience 500
+    when
+        $lr : ILinearRegression()
+        $response : Response()
+        $df : DataFrame()
+    then
+    	$lr.fit($response,$df);
+
+end
+
+rule "Insert the coefficients"
+salience 400
+	
+	when
+		$lr : ILinearRegression(modelExists==True)		
+	then
+		insert($lr.getCoefficients())
+end
+
+
+rule "Interpret the coefficients"
+salience 300
+
+	when
+		$coefs: Coefficients()
+		$list : Results()
+	then
+		HashMap<String,Double> c=$coefs.getCoefficients();
+		
+		for (Map.Entry<String, Double> entry : c.entrySet()) {
+    		String key = entry.getKey();
+    		Double value = entry.getValue();
+    		if(value<0.05){
+    			ResultStatement result=new ResultStatement("The coefficient for "+key+" is important at the 0.05 level. The value is "+value.toString(),key+value.toString());
+				$list.add(result);
+    		}
+    	}
+end

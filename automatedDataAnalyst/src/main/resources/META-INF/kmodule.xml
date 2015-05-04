@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
+    <kbase name="data_preparation" packages="data_preparation">
+        <ksession name="data_preparation"/>
+    </kbase>
+    <kbase name="statistical" packages="statistical">
+        <ksession name="statistical"/>
+    </kbase>
+    <kbase name="predictive" packages="predictive">
+        <ksession name="predictive"/>
+    </kbase><kbase name="descriptives" packages="descriptives">
+        <ksession name="descriptives"/>
+    </kbase>
+     <kbase name="statistical_linear_regression" packages="statistical_linear_regression">
+        <ksession name="statistical_linear_regression"/>
+    </kbase>
+    <kbase name="clustering" packages="clustering">
+        <ksession name="clustering"/>
+    </kbase>
+    
+</kmodule>

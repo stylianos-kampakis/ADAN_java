@@ -1,0 +1,78 @@
+//created on: Apr 1, 2015
+package analyst
+import com.analyst.*;
+import com.factengine.*;
+import com.factengine.performancedescriptors.*;
+import com.factengine.commanders.*;
+import com.dataframe.*;
+import com.analysisInterface.results.*;
+
+//list any import classes here.
+
+
+
+//declare any global variables here
+
+
+rule "Run linear regression"
+
+    when
+        $lr: RulesLinearRegression()
+        $list : Results()
+        $response : Response()
+    then
+        $list.add($lr.analyzeData($response));
+end
+
+rule "When variables more than columns run elastic net"
+
+    when
+       $df : DataFrame(numberColumns>numberRows)
+       $list : Results()
+       $response : Response()
+    then
+       $exec.addModel(new ElasticNet($df));
+	   $list.add(new ResultStatement("Execute elastic net because the number of columns is more than the number of rows.","elastic net"));
+
+end
+
+rule "If positive integers run Poisson regression"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+
+end
+
+
+rule "If positive integers and overdispersion run Negative Binomial regression"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+
+end
+
+
+rule "If Poisson regression and negative regression were executed, compare them"
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+
+end
+
+
+rule "Compare all regression models"
+    //include attributes such as "salience" here...
+    when
+        $exec : ExecutionCommander()
+        $df : DataFrame()
+        $list : Results()
+    then
+        $exec.addModel(new RulesRANSAC($df));
+		$list.add(new ResultStatement("Execute RANSAC because outliers were detected. RANSAC has been designed to deal with outliers","ransac"));
+end

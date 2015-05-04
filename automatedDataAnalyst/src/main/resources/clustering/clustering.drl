@@ -1,0 +1,50 @@
+//created on: Apr 23, 2015
+package clustering
+
+//list any import classes here.
+
+
+
+//declare any global variables here
+
+
+
+
+rule "Run X-means to get an idea for the number of clusters"
+salience 1000
+
+    when
+        //conditions
+    then
+        //actions
+
+end
+
+
+rule "Run DBSCAN in case the clusters are not spherical"
+salience 900
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+
+end
+
+rule "Compare the two clustering methods"
+salience 800
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+end
+
+rule "If x-means is better play around with different numbers of clusters"
+salience 700
+    //include attributes such as "salience" here...
+    when
+        //conditions
+    then
+        //actions
+end

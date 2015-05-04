@@ -1,0 +1,55 @@
+//created on: Apr 1, 2015
+package analyst
+import com.dataframe.DataFrame;
+import com.dataframe.DataFrameIndexException;
+import com.dataframe.DataFrame.*;
+import com.factengine.*;
+import com.factengine.performancedescriptors.*;
+import java.util.*;
+
+//list any import classes here.
+
+
+
+//declare any global variables here
+
+
+
+
+rule "State that number of columns more than number of rows"
+
+    when
+        $df:DataFrame(NumberColumns>NumberRows)
+        $list : Results()
+    then
+		ResultStatement result=new ResultStatement("The number of variables is greater "
+		+"than the number of inputs. The total number of columns is "+$df.getNumberColumns()+" while the "+
+		"total number of rows is "+$df.getNumberRows()+".","cols_more_than_rows");
+		$list.add(result);
+end
+
+
+rule "If lots of correlated variables run factor analysis"
+    //include attributes such as "salience" here...
+    when
+    	$df:DataFrame()
+    	$list:Results()
+        //$fa:IFactorAnalysis()
+    then
+        //$list.add($fa($df))
+
+end
+
+rule "If numerical make histogram of response"
+    //include attributes such as "salience" here...
+    when
+    	$df:DataFrame()
+    	$res : Response()
+    	$list: Results()
+    	$plotprovider : Plotter
+        //$data: get response from $df
+    then
+    //this returns a plot response
+        $list.add($plotprovider.makeHistogram($data,$res))
+
+end
