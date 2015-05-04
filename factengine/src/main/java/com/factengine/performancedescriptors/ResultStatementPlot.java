@@ -1,15 +1,15 @@
 package com.factengine.performancedescriptors;
 
-import com.data.plotter.Plot;
+import java.awt.Image;
 
 public class ResultStatementPlot extends ResultStatement {
 
-	Plot plot;
+	Image plot;
 	
-	public ResultStatementPlot(String description, String id, Plot plot) {
+	public ResultStatementPlot(String description, String id, Image plot) {
 		super(description, id);
 		this.plot=plot;
-		// TODO Auto-generated constructor stub
+		
 	}
 
 }
