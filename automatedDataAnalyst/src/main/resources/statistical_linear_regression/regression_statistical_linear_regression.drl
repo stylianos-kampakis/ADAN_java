@@ -18,8 +18,6 @@ import java.util.*;
 //declare any global variables here
 
 
-
-
 rule "When not normal, then make response normal"
 salience 1000
     when
@@ -46,12 +44,11 @@ salience 500
 end
 
 rule "Insert the coefficients"
-salience 400
-	
+salience 400	
 	when
-		$lr : ILinearRegression(modelExists==True)		
+		$lr : ILinearRegression(modelExists==true);	
 	then
-		insert($lr.getCoefficients())
+		insert($lr.getCoefficients());
 end
 
 

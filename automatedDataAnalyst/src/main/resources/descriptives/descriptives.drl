@@ -6,14 +6,12 @@ import com.dataframe.DataFrame.*;
 import com.factengine.*;
 import com.factengine.performancedescriptors.*;
 import java.util.*;
+import com.analysisInterface.providers.plotting.*;
 
 //list any import classes here.
 
 
-
 //declare any global variables here
-
-
 
 
 rule "State that number of columns more than number of rows"
@@ -46,10 +44,9 @@ rule "If numerical make histogram of response"
     	$df:DataFrame()
     	$res : Response()
     	$list: Results()
-    	$plotprovider : Plotter
+    	$plotprovider : IPlotter()
         //$data: get response from $df
     then
     //this returns a plot response
-        $list.add($plotprovider.makeHistogram($data,$res))
-
+        $list.add($plotprovider.makeHistogram($df,$res));
 end
