@@ -30,6 +30,9 @@ import com.dataframe.DataFrame;
 * @author Stylianos Kampakis
 * @version 0.1 March 3, 2015.
 */
+
+//The class has been deprecated in favour of a different design
+@Deprecated
 public class AnalysisExecutor {
 	
 	DataFrame df;
