@@ -6,6 +6,9 @@ import com.factengine.performancedescriptors.*;
 import com.factengine.commanders.*;
 import com.dataframe.*;
 import com.analysisInterface.results.*;
+import com.analysisInterface.providers.supervised.*;
+import com.analysisInterface.providers.supervised.IElasticNet;
+
 
 //list any import classes here.
 
@@ -14,24 +17,29 @@ import com.analysisInterface.results.*;
 //declare any global variables here
 
 
-rule "Run linear regression"
+rule "Always run linear regression"
 
     when
-        $lr: RulesLinearRegression()
+     	$exec : ExecutionCommander()
+        $df : DataFrame()
         $list : Results()
         $response : Response()
+        $lr: RulesLinearRegression()
     then
+    	$exec.addModel(new RulesLinearRegression($df,$lr);
         $list.add($lr.analyzeData($response));
 end
 
 rule "When variables more than columns run elastic net"
 
     when
+       $exec : ExecutionCommander()
        $df : DataFrame(numberColumns>numberRows)
        $list : Results()
        $response : Response()
+       $elasticnet :IElasticNet()
     then
-       $exec.addModel(new ElasticNet($df));
+       $exec.addModel(new ElasticNet($df,$elasticnet));
 	   $list.add(new ResultStatement("Execute elastic net because the number of columns is more than the number of rows.","elastic net"));
 
 end
@@ -66,13 +74,25 @@ rule "If Poisson regression and negative regression were executed, compare them"
 end
 
 
-rule "Compare all regression models"
+rule "If there are outliers execute RANSAC"
     //include attributes such as "salience" here...
     when
         $exec : ExecutionCommander()
         $df : DataFrame()
         $list : Results()
+        $ransac : IRansac()
     then
-        $exec.addModel(new RulesRANSAC($df));
+        $exec.addModel(new RulesRANSAC($df,$ransac));
 		$list.add(new ResultStatement("Execute RANSAC because outliers were detected. RANSAC has been designed to deal with outliers","ransac"));
+end
+
+
+
+
+rule "Compare all regression models"
+    //include attributes such as "salience" here...
+    when
+       
+    then
+       
 end

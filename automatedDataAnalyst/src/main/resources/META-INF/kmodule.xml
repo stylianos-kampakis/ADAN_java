@@ -11,8 +11,8 @@
     </kbase><kbase name="descriptives" packages="descriptives">
         <ksession name="descriptives"/>
     </kbase>
-     <kbase name="statistical_linear_regression" packages="statistical_linear_regression">
-        <ksession name="statistical_linear_regression"/>
+     <kbase name="linear_regression" packages="linear_regression">
+        <ksession name="linear_regression"/>
     </kbase>
     <kbase name="clustering" packages="clustering">
         <ksession name="clustering"/>

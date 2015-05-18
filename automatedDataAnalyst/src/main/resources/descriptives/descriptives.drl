@@ -38,6 +38,16 @@ rule "If lots of correlated variables run factor analysis"
 
 end
 
+rule "Find columns with zero variance"
+    //include attributes such as "salience" here...
+    when
+    	$df:DataFrame()
+    	$list:Results()
+        
+    then
+
+end
+
 rule "If numerical make histogram of response"
     //include attributes such as "salience" here...
     when
