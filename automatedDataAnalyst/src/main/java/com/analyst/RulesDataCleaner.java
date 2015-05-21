@@ -12,6 +12,7 @@ import com.dataframe.DataFrame;
 import com.dataframe.DataFrameIndexException;
 import com.dataframe.DataPoint;
 import com.datautils.DataUtils;
+import com.factengine.Fact;
 import com.factengine.FactFactory;
 import com.factengine.commanders.ImputationCommander;
 import com.factengine.commanders.RowRemovalCommander;
@@ -19,10 +20,7 @@ import com.factengine.datasetdescriptors.FactRow;
 
 public class RulesDataCleaner extends RulesExecutor {
 	
-	private DataFrame df;
-	private KieServices ks;
-	private KieContainer kContainer;
-	private KieSession kSession;
+	
 	private ImputationCommander imputationCommander;
 	private RowRemovalCommander rowRemovalCommander;
 	
@@ -31,20 +29,23 @@ public class RulesDataCleaner extends RulesExecutor {
 	public RulesDataCleaner(DataFrame df, imputationOptions options){
 	
 		
-		super(df,"data_preparation");
+		super(df,"data_preparation","data_cleaning");
 		
 	    FactFactory factFactory=new FactFactory();
 	    List<FactRow> factsRows=factFactory.getMissingRowFacts(df);
 	    switch(options){
 		case MEAN:
 		    imputationCommander=new ImputationCommander(new DataUtils.meanImputor());
+		    break;
 		case MEDIAN:
 		    imputationCommander=new ImputationCommander(new DataUtils.medianImputor());
+		    break;
 		case KNN:
 		    imputationCommander=new ImputationCommander(new DataUtils.knnImputor());
+		    break;
 		}
 	    rowRemovalCommander=new RowRemovalCommander();
-   	
+	    kSession.insert(factFactory);
 	    factFactory.factInsertor(kSession, factsRows);
 
 	    kSession.insert(df);

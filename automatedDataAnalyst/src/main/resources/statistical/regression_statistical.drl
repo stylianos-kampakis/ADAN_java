@@ -30,6 +30,7 @@ rule "Always run linear regression"
         $list.add($lr.analyzeData($response));
 end
 
+
 rule "When variables more than columns run elastic net"
 
     when
@@ -43,6 +44,7 @@ rule "When variables more than columns run elastic net"
 	   $list.add(new ResultStatement("Execute elastic net because the number of columns is more than the number of rows.","elastic net"));
 
 end
+
 
 rule "If positive integers run Poisson regression"
     //include attributes such as "salience" here...
