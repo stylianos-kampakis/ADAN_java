@@ -82,8 +82,8 @@ public class FactFactory {
 	 * @param kSession
 	 * @param facts
 	 */
-	public void factInsertor(KieSession kSession, List<?> facts){
-		for(Object fact : facts){
+	public void factInsertor(KieSession kSession, List<? extends Fact> facts){
+		for(Fact fact : facts){
 			kSession.insert(fact);
 		}
 	}
