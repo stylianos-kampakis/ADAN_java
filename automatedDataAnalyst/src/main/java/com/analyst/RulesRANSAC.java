@@ -6,7 +6,7 @@ import com.dataframe.DataFrame;
 public class RulesRANSAC extends RulesExecutorModel {
 	
 	public RulesRANSAC(DataFrame df,IRansac analysisExecutor) {
-		super(df, "ransac",analysisExecutor);
+		super(df,"ransac", "ransac",analysisExecutor);
 
 	}
 

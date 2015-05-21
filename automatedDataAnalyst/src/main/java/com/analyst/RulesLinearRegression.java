@@ -25,7 +25,7 @@ public class RulesLinearRegression extends RulesExecutorModel{
 	
 	public RulesLinearRegression(DataFrame df,ILinearRegression analysisExecutor) {
 		//the constructor initializes for the drools session "statistical" corresponding to the statistical.drl
-		super(df,"regression_statistical_linear_regression",analysisExecutor);
+		super(df,"linear_regression","linear_regression",analysisExecutor);
 		handleResults=kSession.insert(results);
 		kSession.insert(analysisExecutor);
 

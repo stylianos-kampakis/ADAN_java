@@ -7,8 +7,8 @@ public class RulesExecutorModel extends RulesExecutor {
 
 	public final IModel analysisExecutor;
 	
-	public RulesExecutorModel(DataFrame df, String sessionName, IModel analysisExecutor) {
-		super(df, sessionName);
+	public RulesExecutorModel(DataFrame df,String packageName, String sessionName, IModel analysisExecutor) {
+		super(df, packageName, sessionName);
 		this.analysisExecutor=analysisExecutor;
 	}
 
